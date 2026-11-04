@@ -472,6 +472,13 @@ a:focus-visible, button:focus-visible {
   background: var(--sky-2);
   border: 1px solid var(--navy);
 }
+.ed-venue-photo {
+  display: block;
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border: 1px solid var(--navy);
+}
 .ed-venue-art {
   display: flex;
   align-items: flex-end;

@@ -501,6 +501,13 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--orange); outlin
   align-items: center;
 }
 .mi-venue-figure { padding: 30px; }
+.mi-venue-photo {
+  display: block;
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 14px;
+}
 .mi-venue-art {
   display: flex;
   align-items: flex-end;

@@ -395,6 +395,13 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--orange); outlin
 
 .au-venue-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 54px; align-items: center; }
 .au-venue-figure { padding: 28px; }
+.au-venue-photo {
+  display: block;
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 14px;
+}
 .au-venue-art { display: flex; align-items: flex-end; gap: 8px; width: 100%; height: 260px; }
 .au-venue-art span {
   flex: 1;
