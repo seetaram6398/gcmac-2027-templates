@@ -819,6 +819,44 @@ code { font-size: 0.88em; background: rgba(8, 58, 99, 0.08); padding: 1px 5px; b
 .p17 .p-badge { background: #a78bfa; color: #0a0720; border-color: #a78bfa; }
 .p17 .p-new { background: #a78bfa; color: #0a0720; }
 
+.p18 {
+  background:
+    radial-gradient(circle at 84% 16%, rgba(108, 166, 214, 0.32), transparent 34%),
+    radial-gradient(circle at 10% 88%, rgba(255, 213, 79, 0.26), transparent 36%),
+    linear-gradient(150deg, #f6f8ff, #e5ecfa);
+  color: #2a2d47;
+}
+.p18::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(61, 71, 133, 0.14) 1px, transparent 1px);
+  background-size: 20px 20px;
+  mask-image: radial-gradient(ellipse at 30% 50%, #000, transparent 76%);
+  -webkit-mask-image: radial-gradient(ellipse at 30% 50%, #000, transparent 76%);
+  opacity: 0.5;
+}
+.p18::after {
+  right: 24px;
+  top: 50%;
+  width: 104px;
+  height: 132px;
+  transform: translateY(-50%);
+  border: 4px solid #fff;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 30% 26%, #3d4785 0 15%, transparent 16%),
+    radial-gradient(circle at 72% 40%, #6ca6d6 0 15%, transparent 16%),
+    radial-gradient(circle at 32% 72%, #7ddcef 0 15%, transparent 16%),
+    #fbfbfb;
+  box-shadow: 0 16px 30px -18px rgba(42, 45, 71, 0.55);
+  opacity: 0.96;
+}
+.p18 strong { max-width: 64%; font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 1.3rem; letter-spacing: -0.03em; line-height: 1.08; }
+.p18 .p-kicker { color: #3d4785; }
+.p18 .p-badge { background: #3d4785; color: #fff; border-color: #3d4785; }
+.p18 .p-new { background: #6ca6d6; color: #0b1020; }
+
 .card-body { padding: 26px 28px 30px; display: flex; flex-direction: column; flex: 1; }
 .card-tag {
   font-size: 0.62rem;
