@@ -750,7 +750,7 @@ main,
   font-weight: 700;
 }
 .pillar-card h3 { font-size: 1.08rem; line-height: 1.35; color: var(--primary-dark); }
-.pillar-card p { margin-top: 10px; font-size: 0.9rem; color: var(--muted); }
+.pillar-card p { margin-top: 10px; font-size: 0.9rem; color: var(--muted); text-align: justify; }
 
 /* ---------- Programme ---------- */
 .format-grid {
@@ -845,13 +845,13 @@ main,
   font-weight: 700;
   color: var(--secondary);
 }
-.schedule strong {
-  display: block;
+.schedule li > div {
   font-family: var(--heading);
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--primary-dark);
 }
+.schedule strong { font-weight: 700; }
 .schedule span {
   display: block;
   margin-top: 3px;
@@ -884,13 +884,13 @@ main,
   font-weight: 400;
   color: var(--soft);
 }
-.fee-row b {
+.fee-row > b {
   font-family: var(--heading);
   font-size: 1.15rem;
   color: var(--primary);
   white-space: nowrap;
 }
-.fee-row b small {
+.fee-row > b small {
   display: inline;
   font-size: 0.66rem;
   font-weight: 500;
@@ -1250,6 +1250,11 @@ main,
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 26px;
+}
+.committee-grid.single {
+  grid-template-columns: 1fr;
+  max-width: 900px;
+  margin: 0 auto;
 }
 .committee-card {
   overflow: hidden;
