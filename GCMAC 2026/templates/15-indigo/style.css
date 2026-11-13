@@ -1,3 +1,15 @@
+/* ICMAI site fonts */
+@font-face { font-family: 'Euclid Circular'; src: url('../../assets/fonts/EuclidCircularA-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Euclid Circular'; src: url('../../assets/fonts/EuclidCircularA-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Euclid Circular'; src: url('../../assets/fonts/EuclidCircularA-Medium.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Euclid Circular'; src: url('../../assets/fonts/EuclidCircularA-SemiBold.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Euclid Circular'; src: url('../../assets/fonts/EuclidCircularA-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Euclid Circular'; src: url('../../assets/fonts/EuclidCircularA-LightItalic.woff2') format('woff2'); font-weight: 300; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Euclid Circular'; src: url('../../assets/fonts/EuclidCircularA-Italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Euclid Circular'; src: url('../../assets/fonts/EuclidCircularA-MediumItalic.woff2') format('woff2'); font-weight: 500; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Euclid Circular'; src: url('../../assets/fonts/EuclidCircularA-SemiBoldItalic.woff2') format('woff2'); font-weight: 600; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Euclid Circular'; src: url('../../assets/fonts/EuclidCircularA-BoldItalic.woff2') format('woff2'); font-weight: 700; font-style: italic; font-display: swap; }
+
 :root {
   --primary: #3D4785;
   --primary-dark: #2a2d47;
@@ -14,10 +26,10 @@
   --glass: rgba(255, 255, 255, 0.75);
   --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.08);
   --glass-shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.14);
-  --serif: "Fraunces", Georgia, serif;
-  --heading: "Sora", system-ui, sans-serif;
-  --body: "Manrope", system-ui, sans-serif;
-  --ui: "Space Grotesk", system-ui, sans-serif;
+  --serif: "Euclid Circular", "Noto Sans", system-ui, sans-serif;
+  --heading: "Euclid Circular", "Noto Sans", system-ui, sans-serif;
+  --body: "Euclid Circular", "Noto Sans", system-ui, sans-serif;
+  --ui: "Euclid Circular", "Noto Sans", system-ui, sans-serif;
 }
 
 *,
