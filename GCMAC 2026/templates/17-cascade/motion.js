@@ -95,4 +95,72 @@
     btn.appendChild(ripple);
     setTimeout(function () { ripple.remove(); }, 650);
   });
+
+  /* Countdown timers (supports multiple per page) */
+  var pad = function (n) { return n < 10 ? "0" + n : String(n); };
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-deadline]"), function (timer) {
+    var target = new Date(timer.getAttribute("data-deadline")).getTime();
+    if (isNaN(target)) return;
+
+    var fields = {
+      days: timer.querySelector("[data-days]"),
+      hours: timer.querySelector("[data-hours]"),
+      minutes: timer.querySelector("[data-minutes]"),
+      seconds: timer.querySelector("[data-seconds]")
+    };
+
+    function tick() {
+      var diff = target - Date.now();
+      var values = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      if (diff > 0) {
+        values.days = Math.floor(diff / 86400000);
+        values.hours = Math.floor((diff % 86400000) / 3600000);
+        values.minutes = Math.floor((diff % 3600000) / 60000);
+        values.seconds = Math.floor((diff % 60000) / 1000);
+      }
+      Object.keys(fields).forEach(function (key) {
+        if (fields[key]) fields[key].textContent = pad(values[key]);
+      });
+    }
+
+    tick();
+    window.setInterval(tick, 1000);
+  });
+
+  /* Add-to-calendar (.ics) */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-add-calendar]"), function (btn) {
+    btn.addEventListener("click", function () {
+      var start = btn.getAttribute("data-start");
+      var end = btn.getAttribute("data-end");
+      if (!start || !end) return;
+
+      var lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//GCMAC 2027//Convention//EN",
+        "CALSCALE:GREGORIAN",
+        "BEGIN:VEVENT",
+        "UID:gcmac-2027-" + Date.now() + "@icmai.in",
+        "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z",
+        "DTSTART:" + start,
+        "DTEND:" + end,
+        "SUMMARY:" + (btn.getAttribute("data-title") || "GCMAC 2027"),
+        "LOCATION:" + (btn.getAttribute("data-location") || "The Ashok Hotel, New Delhi"),
+        "DESCRIPTION:" + (btn.getAttribute("data-details") || "Global Cost and Management Accountants' Convention 2027"),
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ];
+
+      var blob = new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = "gcmac-2027.ics";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+    });
+  });
 })();
