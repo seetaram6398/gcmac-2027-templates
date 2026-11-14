@@ -4188,7 +4188,7 @@ main,
   gap: 22px;
   margin: 8px 0 38px;
 }
-.leader-card {
+.committee-spotlight .leader-card {
   position: relative;
   overflow: hidden;
   padding: 28px 22px 24px;
@@ -4199,15 +4199,15 @@ main,
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.leader-card::before {
+.committee-spotlight .leader-card::before {
   content: "";
   position: absolute;
   inset: 0 0 auto;
   height: 92px;
   background: linear-gradient(120deg, rgba(61, 71, 133, 0.1), rgba(125, 220, 239, 0.22));
 }
-.leader-card:hover { transform: translateY(-6px); box-shadow: var(--glass-shadow-hover); }
-.leader-photo {
+.committee-spotlight .leader-card:hover { transform: translateY(-6px); box-shadow: var(--glass-shadow-hover); }
+.committee-spotlight .leader-photo {
   position: relative;
   width: 118px;
   height: 118px;
@@ -4217,7 +4217,7 @@ main,
   background: linear-gradient(135deg, var(--primary), var(--cyan) 55%, var(--gold));
   box-shadow: 0 12px 26px -14px rgba(42, 45, 71, 0.55);
 }
-.leader-photo img {
+.committee-spotlight .leader-photo img {
   display: block;
   width: 100%;
   height: 100%;
@@ -4226,7 +4226,7 @@ main,
   object-position: center 22%;
   background: #eef2fa;
 }
-.leader-role {
+.committee-spotlight .leader-role {
   position: relative;
   display: inline-block;
   margin-bottom: 9px;
@@ -4240,13 +4240,13 @@ main,
   text-transform: uppercase;
   color: var(--primary);
 }
-.leader-card h3 {
+.committee-spotlight .leader-card h3 {
   position: relative;
   font-size: 1.02rem;
   line-height: 1.35;
   color: var(--primary-dark);
 }
-.leader-card p {
+.committee-spotlight .leader-card p {
   position: relative;
   margin-top: 6px;
   font-size: 0.78rem;
@@ -4362,4 +4362,21 @@ main,
   font-size: 0.72rem;
   text-align: center;
   color: var(--muted);
+}
+
+.leader-photo-inner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+}
+
+.profile-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 20%;
 }
