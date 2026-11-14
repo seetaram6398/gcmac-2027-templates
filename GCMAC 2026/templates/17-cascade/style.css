@@ -4006,3 +4006,66 @@ main,
 @media (prefers-reduced-motion: reduce) {
   .theme-visual::after { animation: none; }
 }
+
+/* ---------- Destination guide (Contact) ---------- */
+.travel-intro {
+  display: grid;
+  gap: 14px;
+  max-width: 900px;
+  margin: -18px auto 44px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+.travel-intro p { line-height: 1.8; }
+.place-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.place-card {
+  position: relative;
+  padding: 24px 22px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.place-card:hover { transform: translateY(-5px); box-shadow: var(--glass-shadow-hover); }
+.place-card h3 { margin-bottom: 6px; font-size: 1rem; }
+.place-card p { font-size: 0.85rem; color: var(--muted); }
+.place-tag {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(108, 166, 214, 0.14);
+  font-family: var(--ui);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.place-dist {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(241, 136, 58, 0.14);
+  font-family: var(--ui);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #b25a17;
+}
+@media (max-width: 1024px) {
+  .place-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .place-grid { grid-template-columns: 1fr; }
+  .travel-intro { margin-top: 0; }
+}
+
+.venue-explore-link { margin-top: 16px; font-size: 0.88rem; }
