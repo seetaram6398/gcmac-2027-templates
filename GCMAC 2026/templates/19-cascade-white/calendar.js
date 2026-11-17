@@ -4,30 +4,62 @@
     {
       date: new Date(2026, 11, 15),
       title: "Early Bird registration closes",
+      short: "Early Bird closes",
       type: "Early Bird",
       color: "#F1883A",
-      desc: "Register before 15 December 2026 to avail the Early Bird delegate fee."
+      desc: "Last date to register at the Early Bird delegate fee — The Ashok Hotel, New Delhi.",
+      agenda: [
+        "All day — Early Bird delegate fee closes",
+        "Save ₹2,000 on corporate and ₹1,000 on CMA delegate fees",
+        "Register by email: gcmac2027@icmai.in"
+      ]
     },
     {
       date: new Date(2027, 1, 12),
-      title: "Inaugural Plenary & Global Perspective",
+      title: "Day 1 · Foundations & Global Perspectives",
+      short: "Day 1 · 6 sessions",
       type: "Convention",
       color: "#3D4785",
-      desc: "Registration, inauguration, Global Perspective on CMAs in Governance, high tea and networking."
+      desc: "Inaugural plenary, global perspective and the opening fireside chat.",
+      agenda: [
+        "01:30 PM — Registration & Networking Tea",
+        "03:00 PM — Inaugural Plenary & Global Perspective",
+        "04:30 PM — Networking Tea Break",
+        "04:45 PM — Plenary: Global CMA Frameworks for Value Governance",
+        "06:15 PM — Global Fireside Chat: From Insight to Impact",
+        "07:30 PM — Cultural Evening & Networking Dinner"
+      ]
     },
     {
       date: new Date(2027, 1, 13),
-      title: "Parallel Technical Sessions & CXO Fireside",
+      title: "Day 2 · Resilience, Energy & Sustainability",
+      short: "Day 2 · 7 sessions",
       type: "Convention",
       color: "#1868A8",
-      desc: "Parallel technical sessions, CXO fireside and plenary panel, followed by a networking dinner."
+      desc: "Parallel technical sessions, CXO fireside and plenary panel.",
+      agenda: [
+        "10:00 AM — Technical Session I: Ensuring Supply Chain Resilience",
+        "01:00 PM — Networking Lunch",
+        "02:00 PM — Technical Session II: Reconfiguring Energy Sources",
+        "05:00 PM — Tea Break",
+        "05:15 PM — Technical Session III: Sustainable Development Strategies",
+        "Parallel — Technical Session IV: Global CMA Practices in Service Sector",
+        "Plenary — CXO Fireside & Panel: Beyond Numbers, Co-Piloting Strategy"
+      ]
     },
     {
       date: new Date(2027, 1, 14),
-      title: "Technical Session V & Valedictory Session",
+      title: "Day 3 · Digital Transformation & Valedictory",
+      short: "Day 3 · 4 sessions",
       type: "Convention",
       color: "#26A951",
-      desc: "Vision 2030, panel discussion, valedictory session and networking lunch before departure."
+      desc: "AI-driven transformation, valedictory session and networking lunch.",
+      agenda: [
+        "10:00 AM — Technical Session V: AI-Driven Digital Transformation",
+        "11:30 AM — Tea Break",
+        "11:45 AM — Valedictory Session",
+        "01:15 PM — Networking Lunch & Departure"
+      ]
     }
   ];
 
@@ -98,6 +130,16 @@
         if (i > 0) html += '<hr style="border:none;border-top:1px solid rgba(255,255,255,.12);margin:6px 0">';
         html += '<div class="cal-tt-title">' + ev.title + "</div>";
         html += '<div class="cal-tt-sub"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + ev.color + ';flex-shrink:0"></span>' + ev.type + " &middot; " + formatDate(ev.date) + "</div>";
+        if (ev.desc) html += '<div class="cal-tt-desc">' + ev.desc + "</div>";
+        if (ev.agenda && ev.agenda.length) {
+          var preview = ev.agenda.slice(0, 3);
+          html += '<div class="cal-tt-agenda">' + preview.map(function (item) {
+            return "<span>" + item + "</span>";
+          }).join("") + "</div>";
+          if (ev.agenda.length > 3) {
+            html += '<div class="cal-tt-more">+' + (ev.agenda.length - 3) + " more — tap the date for the full schedule</div>";
+          }
+        }
       });
       tooltip.innerHTML = html;
       tooltipTimer = setTimeout(function () {
@@ -113,8 +155,16 @@
         return;
       }
       detail.innerHTML = evs.map(function (ev) {
-        return '<strong>' + formatDate(ev.date) + '</strong>' + ev.title + ' &mdash; ' + ev.desc;
-      }).join('<br><br>');
+        var html = '<strong>' + formatDate(ev.date) + '</strong>';
+        html += '<span class="cal-detail-title">' + ev.title + '</span>';
+        if (ev.desc) html += '<span class="cal-detail-desc">' + ev.desc + '</span>';
+        if (ev.agenda && ev.agenda.length) {
+          html += '<ul class="cal-agenda">' + ev.agenda.map(function (item) {
+            return '<li>' + item + '</li>';
+          }).join('') + '</ul>';
+        }
+        return html;
+      }).join('<hr class="cal-detail-sep">');
     }
 
     function render() {
@@ -148,7 +198,7 @@
         if (evs.length) {
           html += '<div class="cal-ev-list">';
           evs.slice(0, 2).forEach(function (ev) {
-            html += '<span class="cal-ev-item" style="background:' + ev.color + '">' + ev.title + "</span>";
+            html += '<span class="cal-ev-item" style="background:' + ev.color + '" title="' + ev.title + '">' + (ev.short || ev.title) + "</span>";
           });
           if (evs.length > 2) {
             html += '<span class="cal-ev-more">+' + (evs.length - 2) + " more</span>";
@@ -192,6 +242,17 @@
     }
 
     render();
+
+    var now = new Date();
+    now.setHours(0, 0, 0, 0);
+    var next = events.slice().sort(function (a, b) { return a.date - b.date; }).filter(function (ev) {
+      return ev.date.getTime() >= now.getTime();
+    })[0];
+    if (next) {
+      selectedKey = key(next.date);
+      showDetail([next]);
+      render();
+    }
   }
 
   Array.prototype.forEach.call(document.querySelectorAll(".calendar-block"), setup);
