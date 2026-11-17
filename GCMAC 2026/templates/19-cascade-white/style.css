@@ -4954,3 +4954,11 @@ main,
   .stack-card h3 { font-size: 1.05rem; }
   .stack-card p { font-size: 0.88rem; }
 }
+
+.stack-number { display: none; }
+.stack-pill { left: 28px; right: auto; }
+.stack-icon { margin-top: 34px; }
+@media (max-width: 768px) {
+  .stack-pill { left: 22px; right: auto; }
+  .stack-icon { margin-top: 32px; }
+}
