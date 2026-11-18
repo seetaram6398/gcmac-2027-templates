@@ -146,7 +146,7 @@
         "DTSTART:" + start,
         "DTEND:" + end,
         "SUMMARY:" + (btn.getAttribute("data-title") || "GCMAC 2027"),
-        "LOCATION:" + (btn.getAttribute("data-location") || "The Ashok Hotel, New Delhi"),
+        "LOCATION:" + (btn.getAttribute("data-location") || "The Ashok, New Delhi"),
         "DESCRIPTION:" + (btn.getAttribute("data-details") || "Global Cost and Management Accountants' Convention 2027"),
         "END:VEVENT",
         "END:VCALENDAR"

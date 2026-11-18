@@ -7,7 +7,7 @@
       short: "Early Bird closes",
       type: "Early Bird",
       color: "#F1883A",
-      desc: "Last date to register at the Early Bird delegate fee — The Ashok Hotel, New Delhi.",
+      desc: "Last date to register at the Early Bird delegate fee — The Ashok, New Delhi.",
       agenda: [
         "All day — Early Bird delegate fee closes",
         "Save ₹2,000 on corporate and ₹1,000 on CMA delegate fees",
