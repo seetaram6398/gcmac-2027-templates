@@ -77,9 +77,6 @@
 
   var dashboard = mount.querySelector("[data-dashboard]");
   var loginShells = Array.prototype.slice.call(document.querySelectorAll("[data-login-shell]"));
-  var gatedShells = Array.prototype.slice.call(document.querySelectorAll("[data-requires-login]"));
-
-  gatedShells.forEach(function (shell) { shell.hidden = true; });
 
   function setStatus(message) {
     dashboard.querySelectorAll("[data-status]").forEach(function (el) { el.textContent = message; });
@@ -87,14 +84,12 @@
 
   function showDashboard() {
     loginShells.forEach(function (shell) { shell.hidden = true; });
-    gatedShells.forEach(function (shell) { shell.hidden = false; });
     dashboard.hidden = false;
     dashboard.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function showLogin() {
     dashboard.hidden = true;
-    gatedShells.forEach(function (shell) { shell.hidden = true; });
     loginShells.forEach(function (shell) { shell.hidden = false; });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -128,6 +123,14 @@
   dashboard.querySelector("[data-dash-register]").addEventListener("submit", function (event) {
     event.preventDefault();
     setStatus("Registration details saved for this demo.");
+  });
+
+  document.querySelectorAll("[data-public-register]").forEach(function (form) {
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      var status = form.parentElement.querySelector("[data-status]");
+      if (status) status.textContent = "Registration details saved for this demo.";
+    });
   });
 
   dashboard.querySelector("[data-pay-now]").addEventListener("click", function () {

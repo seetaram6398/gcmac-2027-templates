@@ -118,7 +118,7 @@
 
         <div class="dashboard-mount" data-dashboard-mount data-account-label="Foreign Delegates" data-fee="$200" data-registration-link="#new-registration"></div>
 
-        <div class="form-shell reveal" id="new-registration" data-requires-login hidden>
+        <div class="form-shell reveal" id="new-registration">
           <div class="form-panel-head">
             <span class="form-badge">04</span>
             <div>
@@ -126,7 +126,7 @@
               <p>Please fill in your details to create a foreign delegate registration account.</p>
             </div>
           </div>
-          <form action="#" method="post">
+          <form action="#" method="post" data-public-register>
             <div class="form-grid">
               <div class="field">
                 <label for="foreign-name">Full Name <span class="required" aria-hidden="true">*</span></label>
@@ -190,6 +190,7 @@
               <button class="btn btn-secondary" type="button" data-logout>Logout</button>
             </div>
           </form>
+          <p class="dash-status" data-status role="status"></p>
         </div>
       </div>
     </section>

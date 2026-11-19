@@ -126,7 +126,7 @@
 
         <div class="dashboard-mount" data-dashboard-mount data-account-label="Corporate Delegates &amp; Others" data-fee="₹8,000/- + 18% GST" data-registration-link="#new-registration" data-extra-link="#other-delegate" data-extra-label="Other delegates"></div>
 
-        <div class="form-shell reveal" id="new-registration" data-requires-login hidden>
+        <div class="form-shell reveal" id="new-registration">
           <div class="form-panel-head">
             <span class="form-badge">02</span>
             <div>
@@ -134,7 +134,7 @@
               <p>Please fill in the details of the organisation and its authorised signatory.</p>
             </div>
           </div>
-          <form action="#" method="post">
+          <form action="#" method="post" data-public-register>
             <h3 class="form-section-title">Organisation details</h3>
             <div class="form-grid">
               <div class="field field-full">
@@ -197,9 +197,10 @@
               <a class="form-link" href="#other-delegate">Add another delegate →</a>
             </div>
           </form>
+          <p class="dash-status" data-status role="status"></p>
         </div>
 
-        <div class="form-shell reveal" id="other-delegate" data-requires-login hidden>
+        <div class="form-shell reveal" id="other-delegate">
           <div class="form-panel-head">
             <span class="form-badge">03</span>
             <div>

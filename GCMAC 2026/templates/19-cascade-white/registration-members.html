@@ -124,6 +124,54 @@
         </div>
 
         <div class="dashboard-mount" data-dashboard-mount data-account-label="CMAs in Practice / Self Sponsored CMAs" data-fee="₹4,000/- + 18% GST"></div>
+
+        <div class="form-shell reveal" id="registration">
+          <div class="form-panel-head">
+            <span class="form-badge">02</span>
+            <div>
+              <h2>Delegate Registration Form — CMA in Practice / Self Sponsored CMAs</h2>
+              <p>Register as a delegate at the member category rate.</p>
+            </div>
+          </div>
+          <form action="#" method="post" data-public-register>
+            <div class="form-grid">
+              <div class="field">
+                <label for="mem-name">Delegate's Name <span class="required" aria-hidden="true">*</span></label>
+                <input type="text" id="mem-name" name="delegate_name" autocomplete="name" required>
+              </div>
+              <div class="field">
+                <label for="mem-designation">Designation <span class="required" aria-hidden="true">*</span></label>
+                <input type="text" id="mem-designation" name="designation" required>
+              </div>
+              <div class="field">
+                <label for="mem-mobile">Mobile No. <span class="required" aria-hidden="true">*</span></label>
+                <input type="tel" id="mem-mobile" name="mobile_no" maxlength="10" pattern="[0-9]{10}" required>
+              </div>
+              <div class="field">
+                <label for="mem-email">E-mail ID <span class="required" aria-hidden="true">*</span></label>
+                <input type="email" id="mem-email" name="email" autocomplete="email" required>
+              </div>
+              <div class="field">
+                <label for="mem-state">State <span class="required" aria-hidden="true">*</span></label>
+                <input type="text" id="mem-state" name="state" required>
+              </div>
+              <div class="field">
+                <label for="mem-city">City <span class="required" aria-hidden="true">*</span></label>
+                <input type="text" id="mem-city" name="city" required>
+              </div>
+              <div class="field">
+                <label for="mem-pin">Pin Code <span class="required" aria-hidden="true">*</span></label>
+                <input type="text" id="mem-pin" name="pin_code" maxlength="10" autocomplete="postal-code" required>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-primary" type="submit">Submit Registration</button>
+              <button class="btn btn-secondary" type="reset">Reset</button>
+              <a class="btn btn-secondary" href="payment-registration.html">Back to categories</a>
+            </div>
+          </form>
+          <p class="dash-status" data-status role="status"></p>
+        </div>
       </div>
     </section>
   </main>
