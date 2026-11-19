@@ -4967,35 +4967,6 @@ main,
 }
 
 /* ---------- Payment & registration forms ---------- */
-.pay-banner {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  margin-bottom: 52px;
-  padding: 22px 26px;
-  border: 1px solid rgba(61, 71, 133, 0.14);
-  border-radius: 18px;
-  background: linear-gradient(120deg, rgba(108, 166, 214, 0.16), rgba(255, 255, 255, 0.9));
-  box-shadow: var(--glass-shadow);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-.pay-banner:hover { transform: translateY(-2px); box-shadow: var(--glass-shadow-hover); }
-.pay-banner-icon {
-  display: grid;
-  flex: 0 0 48px;
-  width: 48px;
-  height: 48px;
-  place-items: center;
-  border-radius: 12px;
-  background: var(--primary);
-  color: #fff;
-}
-.pay-banner-icon svg { width: 24px; height: 24px; }
-.pay-banner-copy { display: grid; gap: 3px; }
-.pay-banner-copy strong { font-family: var(--heading); font-size: 1.02rem; color: var(--primary); }
-.pay-banner-copy span { font-size: 0.82rem; color: var(--muted); overflow-wrap: anywhere; }
-.pay-banner-arrow { margin-left: auto; font-size: 1.4rem; color: var(--primary); }
-
 .pay-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5140,8 +5111,6 @@ main,
   .form-shell { padding: 28px 24px; }
 }
 @media (max-width: 768px) {
-  .pay-banner { flex-wrap: wrap; padding: 20px; }
-  .pay-banner-arrow { display: none; }
   .pay-grid { grid-template-columns: 1fr; }
   .pay-card { min-height: auto; padding: 26px 24px; }
   .form-grid { grid-template-columns: 1fr; }
