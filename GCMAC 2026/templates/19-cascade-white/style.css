@@ -5052,9 +5052,6 @@ main,
 .pay-fee-wrap .fees { max-width: 860px; margin: 24px auto 0; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: var(--glass-shadow); }
 .pay-note { margin-top: 16px; font-size: 0.8rem; text-align: center; color: var(--soft); }
 
-.source-note { margin-bottom: 26px; font-size: 0.78rem; color: var(--soft); }
-.source-note a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
-
 .form-shell {
   max-width: 900px;
   margin: 0 auto 28px;
