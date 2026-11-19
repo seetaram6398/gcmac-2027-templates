@@ -80,7 +80,7 @@
 
     <section class="section" id="foreign">
       <div class="container">
-        <div class="form-shell reveal" id="login">
+        <div class="form-shell reveal" id="login" data-login-shell>
           <div class="form-panel-head">
             <span class="form-badge">04</span>
             <div>
@@ -88,7 +88,7 @@
               <p>Already registered? Sign in to continue your registration and payment.</p>
             </div>
           </div>
-          <form action="#" method="post">
+          <form action="#" method="post" data-login-form>
             <div class="form-grid">
               <div class="field field-full">
                 <label for="foreign-email">Signatory's Email ID <span class="required" aria-hidden="true">*</span></label>
@@ -116,7 +116,9 @@
           </form>
         </div>
 
-        <div class="form-shell reveal" id="new-registration">
+        <div class="dashboard-mount" data-dashboard-mount data-account-label="Foreign Delegates" data-fee="$200" data-registration-link="#new-registration"></div>
+
+        <div class="form-shell reveal" id="new-registration" data-requires-login hidden>
           <div class="form-panel-head">
             <span class="form-badge">04</span>
             <div>
@@ -185,7 +187,7 @@
             <div class="form-actions">
               <button class="btn btn-primary" type="submit">Submit</button>
               <button class="btn btn-secondary" type="reset">Reset</button>
-              <a class="btn btn-secondary" href="#login">Login Page</a>
+              <button class="btn btn-secondary" type="button" data-logout>Logout</button>
             </div>
           </form>
         </div>
@@ -237,5 +239,6 @@
 
   <script src="../shared.js"></script>
   <script src="motion.js"></script>
+  <script src="dashboard.js"></script>
 </body>
 </html>

@@ -5105,7 +5105,7 @@ main,
 .notice ul { margin-top: 10px; display: grid; gap: 6px; }
 .notice li { position: relative; padding-left: 18px; font-size: 0.82rem; color: var(--muted); }
 .notice li::before { content: "•"; position: absolute; left: 4px; color: var(--primary); }
-.notice a { color: var(--primary); text-decoration: underline; }
+
 
 @media (max-width: 900px) {
   .form-shell { padding: 28px 24px; }
@@ -5118,3 +5118,33 @@ main,
   .form-actions .btn { flex: 1 1 140px; }
   .form-link { margin-left: 0; }
 }
+.delegate-table-wrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--line); border-radius: 12px; }
+.delegate-table { width: 100%; min-width: 1040px; border-collapse: collapse; font-size: 0.76rem; }
+.delegate-table th,
+.delegate-table td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+.delegate-table th { background: rgba(61, 71, 133, 0.06); font-family: var(--ui); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); }
+.delegate-table tbody tr:last-child td { border-bottom: 0; }
+.delegate-table td { color: var(--muted); }
+.delegate-table td a { color: var(--primary); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+[data-login-shell][hidden], [data-requires-login][hidden], [data-dashboard][hidden], .dash-panel[hidden] { display: none !important; }
+.dashboard { display: grid; gap: 18px; }
+.dash-head { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.dash-head h2 { margin: 4px 0 2px; font-size: 1.5rem; }
+.dash-head p { margin: 0; color: var(--muted); font-size: 0.86rem; }
+.dash-tabs { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.dash-tab { padding: 9px 16px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--muted); font: inherit; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+.dash-tab:hover { border-color: var(--primary); color: var(--primary); }
+.dash-tab.is-active { border-color: var(--primary); background: var(--primary); color: #fff; }
+.dash-panel { display: grid; gap: 14px; }
+.dash-panel h3 { margin: 0; font-size: 1.05rem; }
+.dash-form .form-actions { margin-top: 4px; }
+.pay-summary { width: 100%; max-width: 560px; border-collapse: collapse; }
+.pay-summary th, .pay-summary td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; font-size: 0.86rem; }
+.pay-summary th { width: 45%; font-family: var(--ui); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.pay-summary td { font-weight: 600; color: var(--primary); }
+.pay-status { display: inline-block; padding: 4px 10px; border-radius: 999px; background: rgba(193, 122, 45, 0.12); color: #9a5a1f; font-size: 0.72rem; font-weight: 600; }
+.receipt-card { display: grid; gap: 6px; padding: 20px; border: 1px dashed var(--line); border-radius: 12px; background: rgba(61, 71, 133, 0.04); }
+.receipt-label { font-family: var(--ui); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.receipt-card strong { font-size: 1rem; color: var(--primary); }
+.receipt-card span:last-child { font-size: 0.8rem; color: var(--muted); }
+.dash-status { min-height: 1.2em; margin: 0; font-size: 0.78rem; font-weight: 600; color: var(--primary); }
