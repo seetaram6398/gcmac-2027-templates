@@ -5148,3 +5148,5 @@ main,
 .receipt-card strong { font-size: 1rem; color: var(--primary); }
 .receipt-card span:last-child { font-size: 0.8rem; color: var(--muted); }
 .dash-status { min-height: 1.2em; margin: 0; font-size: 0.78rem; font-weight: 600; color: var(--primary); }
+[data-download-receipt][hidden] { display: none; }
+.pay-status.is-paid { background: rgba(46, 125, 78, 0.14); color: #256b43; }

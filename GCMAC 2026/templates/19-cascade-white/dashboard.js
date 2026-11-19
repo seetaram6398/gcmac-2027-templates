@@ -41,6 +41,7 @@
           '</div>' +
           '<div class="form-actions">' +
             '<button class="btn btn-primary" type="submit">Save registration</button>' +
+            '<button class="btn btn-primary" type="button" data-pay-register>Pay Now</button>' +
             links +
           '</div>' +
         '</form>' +
@@ -56,7 +57,7 @@
           '</tbody>' +
         '</table>' +
         '<div class="form-actions">' +
-          '<button class="btn btn-primary" type="button" data-pay-now>View payment details</button>' +
+          '<button class="btn btn-primary" type="button" data-pay-register>Pay Now</button>' +
         '</div>' +
         '<p class="dash-status" data-status role="status"></p>' +
       '</div>' +
@@ -133,24 +134,44 @@
     });
   });
 
-  dashboard.querySelector("[data-pay-now]").addEventListener("click", function () {
-    setStatus("Payment details are shown above. Online payment opens shortly.");
+  document.querySelectorAll("[data-pay-register]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var form = button.closest("form");
+      if (form && !form.reportValidity()) return;
+      var shell = button.closest(".form-shell") || dashboard;
+      var status = shell.querySelector("[data-status], [data-delegate-status]");
+      var message = "Payment successful. Your GCMAC 2027 registration is confirmed.";
+      if (status) status.textContent = message;
+      setStatus(message);
+      var receipt = shell.querySelector("[data-download-receipt]");
+      if (receipt) receipt.hidden = false;
+      var payStatus = document.querySelector(".pay-status");
+      if (payStatus) {
+        payStatus.textContent = "Paid";
+        payStatus.classList.add("is-paid");
+      }
+    });
   });
 
-  dashboard.querySelector("[data-download-receipt]").addEventListener("click", function () {
-    var text = "GCMAC 2027 - Registration Receipt\n\n" +
-      "Delegate category: " + label + "\n" +
-      "Event: 12-14 February 2027, The Ashok, New Delhi\n" +
-      "Fee: " + fee + "\n";
-    var url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
-    var link = document.createElement("a");
-    link.href = url;
-    link.download = "GCMAC-2027-Receipt.txt";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-    setStatus("Receipt downloaded.");
+  document.querySelectorAll("[data-download-receipt]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var text = "GCMAC 2027 - Registration Receipt\n\n" +
+        "Delegate category: " + label + "\n" +
+        "Event: 12-14 February 2027, The Ashok, New Delhi\n" +
+        "Fee: " + fee + "\n";
+      var url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = "GCMAC-2027-Receipt.txt";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      var shell = button.closest(".form-shell") || dashboard;
+      var status = shell.querySelector("[data-status], [data-delegate-status]");
+      if (status) status.textContent = "Receipt downloaded.";
+      setStatus("Receipt downloaded.");
+    });
   });
 
   var form = document.querySelector("[data-delegate-form]");
