@@ -17,14 +17,14 @@
     {
       date: new Date(2027, 1, 12),
       title: "Day 1 · Foundations & Global Perspectives",
-      short: "Day 1 · 6 sessions",
+      short: "Day 1 · 3 sessions",
       type: "Convention",
       color: "#3D4785",
       desc: "Inaugural plenary, global perspective and the opening fireside chat.",
       agenda: [
-        "01:30 PM — Registration & Networking Tea",
-        "03:00 PM — Inaugural Plenary & Global Perspective",
-        "04:30 PM — Networking Tea Break",
+        "01:30 PM — Registrations",
+        "03:00 PM — Inaugural Session",
+        "04:30 PM — Networking Tea",
         "04:45 PM — Plenary: Global CMA Frameworks for Value Governance",
         "06:15 PM — Global Fireside Chat: From Insight to Impact",
         "07:30 PM — Cultural Evening & Networking Dinner"
@@ -33,30 +33,30 @@
     {
       date: new Date(2027, 1, 13),
       title: "Day 2 · Resilience, Energy & Sustainability",
-      short: "Day 2 · 7 sessions",
+      short: "Day 2 · 5 sessions",
       type: "Convention",
       color: "#1868A8",
-      desc: "Parallel technical sessions, CXO fireside and plenary panel.",
+      desc: "Concurrent technical sessions, CXO fireside and plenary panel.",
       agenda: [
-        "10:00 AM — Technical Session I: Ensuring Supply Chain Resilience",
+        "10:00 AM — Concurrent Technical Session I: Ensuring Supply Chain Resilience",
         "01:00 PM — Networking Lunch",
-        "02:00 PM — Technical Session II: Reconfiguring Energy Sources",
-        "05:00 PM — Tea Break",
-        "05:15 PM — Technical Session III: Sustainable Development Strategies",
-        "Parallel — Technical Session IV: Global CMA Practices in Service Sector",
+        "02:00 PM — Concurrent Technical Session II: Reconfiguring Energy Sources",
+        "05:00 PM — Networking Tea",
+        "05:15 PM — Concurrent Technical Session III: Sustainable Development Strategies",
+        "02:00 PM — Concurrent Technical Session IV: Global CMA Practices in Service Sector Dynamics",
         "Plenary — CXO Fireside & Panel: Beyond Numbers, Co-Piloting Strategy"
       ]
     },
     {
       date: new Date(2027, 1, 14),
       title: "Day 3 · Digital Transformation & Valedictory",
-      short: "Day 3 · 4 sessions",
+      short: "Day 3 · 2 sessions",
       type: "Convention",
       color: "#26A951",
       desc: "AI-driven transformation, valedictory session and networking lunch.",
       agenda: [
-        "10:00 AM — Technical Session V: AI-Driven Digital Transformation",
-        "11:30 AM — Tea Break",
+        "10:00 AM — Technical Session V: Harnessing Capabilities of AI-Driven Digital Transformation",
+        "11:30 AM — Networking Tea",
         "11:45 AM — Valedictory Session",
         "01:15 PM — Networking Lunch & Departure"
       ]

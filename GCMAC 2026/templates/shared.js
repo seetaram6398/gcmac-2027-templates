@@ -82,7 +82,7 @@
   /* Countdown */
   var countdown = document.querySelector(".countdown");
   if (countdown) {
-    var target = new Date("2027-02-12T09:00:00+05:30").getTime();
+    var target = new Date("2027-02-12T13:30:00+05:30").getTime();
     var pad = function (n) { return n < 10 ? "0" + n : String(n); };
     var tick = function () {
       var diff = target - Date.now();
