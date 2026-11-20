@@ -2382,10 +2382,6 @@ main,
   from { opacity: 0; transform: translateY(22px); }
   to { opacity: 1; transform: none; }
 }
-@keyframes float-soft {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
 @keyframes btn-sheen {
   0% { left: -70%; }
   100% { left: 130%; }
@@ -2412,22 +2408,6 @@ main,
 }
 .page-hero h1 { animation-delay: 0.08s; }
 .page-hero p { animation-delay: 0.16s; }
-
-.brand-logo {
-  transition: transform 0.45s ease, filter 0.45s ease;
-}
-.brand-logo-wrap:hover .brand-logo {
-  transform: scale(1.025);
-  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
-}
-
-.topbar-emblem img {
-  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.3, 1), filter 0.5s ease;
-}
-.topbar-emblem:hover img {
-  transform: scale(1.07) rotate(-2deg);
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.35));
-}
 
 .btn {
   position: relative;
@@ -2530,12 +2510,6 @@ main,
 .topbar.is-scrolled {
   box-shadow: 0 14px 34px -22px rgba(0, 0, 0, 0.65);
 }
-.topbar-emblem {
-  animation: float-soft 7s ease-in-out infinite;
-}
-.topbar-emblem:hover {
-  animation-play-state: paused;
-}
 .back-to-top {
   position: fixed;
   right: 22px;
@@ -2590,7 +2564,6 @@ main,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .topbar-emblem { animation: none; }
   .scroll-progress { display: none; }
   .btn-ripple { display: none; }
 }
@@ -4516,9 +4489,6 @@ main,
 }
 .brand { color: var(--primary); }
 .brand-logo { filter: none; }
-.brand-logo-wrap:hover .brand-logo {
-  filter: drop-shadow(0 8px 18px rgba(61, 71, 133, 0.28));
-}
 
 .site-nav a,
 .nav-parent { color: var(--primary-dark); }
