@@ -301,7 +301,7 @@ main,
 .submenu a:hover { background: rgba(0, 0, 0, 0.05); color: var(--primary); }
 .submenu a.is-current { background: rgba(0, 0, 0, 0.05); color: var(--primary); }
 
-@media (min-width: 1401px) {
+@media (min-width: 1200px) {
   .nav-group::after {
     content: "";
     position: absolute;
@@ -2022,7 +2022,7 @@ main,
   .venue-figure img { height: 380px; }
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1199px) {
   .site-nav {
     position: absolute;
     top: 100%;
@@ -2257,12 +2257,26 @@ main,
   .explore-card p { -webkit-line-clamp: 3; }
 }
 
-@media (max-width: 1400px) and (min-width: 641px) {
+@media (max-width: 1199px) and (min-width: 641px) {
   .topbar-emblem { width: 82px; height: 82px; padding: 0; }
 }
 
-@media (min-width: 1401px) {
+@media (min-width: 1200px) {
   .brand-logo { height: 104px; }
+}
+
+@media (min-width: 1200px) and (max-width: 1400px) {
+  .topbar-inner { min-height: 100px; gap: 10px; padding-inline: clamp(16px, 1.6vw, 26px); }
+  .brand { gap: 8px; }
+  .brand-logo { height: 72px; }
+  .brand-text { font-size: 0.72rem; letter-spacing: 0.08em; }
+  .brand-text small { font-size: 0.5rem; letter-spacing: 0.14em; }
+  .site-nav { gap: 2px; }
+  .site-nav a,
+  .nav-parent { height: 44px; padding: 0 3px; font-size: 12.5px; }
+  .nav-home-icon { width: 18px; height: 18px; }
+  .topbar-actions { gap: 8px; }
+  .topbar-emblem { width: 68px; height: 68px; }
 }
 
 @media (min-width: 1401px) and (max-width: 1500px) {
@@ -4514,7 +4528,7 @@ main,
 .nav-toggle:hover { background: rgba(61, 71, 133, 0.06); }
 .submenu { border-top: 1px solid var(--line); }
 
-@media (max-width: 1400px) {
+@media (max-width: 1199px) {
   .site-nav {
     background: #ffffff;
     border-top: 1px solid var(--line);
