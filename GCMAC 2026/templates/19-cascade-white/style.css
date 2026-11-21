@@ -1422,13 +1422,49 @@ main,
 }
 .welcome-copy p + p { margin-top: 14px; }
 .theme-list {
-  margin: 14px 0 0 20px;
+  margin: 16px 0 0;
   padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.theme-list li {
+  position: relative;
+  padding: 10px 14px 10px 44px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
   color: var(--muted);
   font-size: 0.94rem;
-  line-height: 1.8;
+  line-height: 1.6;
+  text-align: left;
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }
-.theme-list li { margin-bottom: 6px; }
+.theme-list li:hover {
+  transform: translateX(4px);
+  border-color: var(--primary);
+}
+.theme-list li::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: var(--primary);
+}
+.theme-list li::after {
+  content: "";
+  position: absolute;
+  left: 19px;
+  top: calc(50% - 5px);
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
 .welcome-copy p:first-child::first-letter {
   float: left;
   margin: 8px 10px 0 0;
