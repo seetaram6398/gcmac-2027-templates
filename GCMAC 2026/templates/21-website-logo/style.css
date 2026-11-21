@@ -1845,6 +1845,11 @@ main,
   font-style: italic;
   color: rgba(255, 255, 255, 0.65);
 }
+.pay-note .pay-highlight {
+  color: var(--orange);
+  font-style: normal;
+  font-weight: 700;
+}
 
 .attraction-grid {
   display: grid;
