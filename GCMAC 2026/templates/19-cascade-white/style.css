@@ -1465,6 +1465,25 @@ main,
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
+.pillar-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 16px;
+}
+.pillar-points span {
+  position: relative;
+  padding-left: 14px;
+}
+.pillar-points span::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+}
 .welcome-copy p:first-child::first-letter {
   float: left;
   margin: 8px 10px 0 0;
