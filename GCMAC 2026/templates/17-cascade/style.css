@@ -1664,44 +1664,44 @@ main,
 .secretariat {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  grid-template-columns: 1.4fr 1fr 1fr 1.1fr;
+  gap: 20px;
   margin-top: 26px;
-  padding: 26px 28px;
-  border-radius: 20px;
+  padding: 28px 30px;
+  border-radius: 18px;
   background: linear-gradient(120deg, var(--primary), var(--primary-dark));
   box-shadow: 0 18px 40px rgba(20, 28, 60, 0.2);
   color: #fff;
+  counter-reset: contact-card;
   overflow: hidden;
 }
 .secretariat::before {
   content: "";
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.16), transparent 42%),
-    linear-gradient(120deg, transparent 60%, rgba(255, 213, 79, 0.12));
+  background: radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.16), transparent 42%);
   pointer-events: none;
 }
 .secretariat > div {
   position: relative;
-  padding: 18px 20px;
+  counter-increment: contact-card;
+  padding: 18px 18px 16px;
   border: 1px solid rgba(255, 255, 255, 0.16);
-  border-left: 3px solid rgba(255, 213, 79, 0.6);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.08);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
 }
-.secretariat > div:first-child {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px 24px;
+.secretariat > div::before {
+  content: counter(contact-card, decimal-leading-zero);
+  display: inline-block;
+  margin-bottom: 12px;
+  font-family: var(--ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--gold);
 }
-.secretariat > div:first-child h3 { margin: 0; font-size: 1.12rem; }
-.secretariat > div:first-child p { flex: 1 1 420px; margin: 0; }
 .secretariat > div:hover {
   transform: translateY(-4px);
   border-color: rgba(255, 213, 79, 0.55);
@@ -1709,23 +1709,12 @@ main,
 }
 .secretariat h3 { font-size: 1.02rem; color: #fff; }
 .secretariat h4 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   font-family: var(--ui);
   font-size: 0.64rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--cyan);
-}
-.secretariat h4::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  flex: 0 0 6px;
-  border-radius: 50%;
-  background: var(--gold);
 }
 .secretariat p {
   margin-top: 6px;
@@ -2058,19 +2047,32 @@ main,
   margin-top: 26px;
   padding-top: 26px;
   border-top: 1px solid var(--line);
+  counter-reset: office-card;
 }
 .contact-grid > div {
-  padding: 22px;
+  position: relative;
+  counter-increment: office-card;
+  padding: 20px;
   border: 1px solid var(--line);
   border-top: 3px solid var(--secondary);
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--glass);
   box-shadow: var(--glass-shadow);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
+.contact-grid > div::before {
+  content: counter(office-card, decimal-leading-zero);
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-family: var(--ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--orange);
+}
 .contact-grid > div:hover {
   transform: translateY(-4px);
-  border-color: var(--orange);
   border-top-color: var(--orange);
   box-shadow: var(--glass-shadow-hover);
 }
@@ -2081,15 +2083,7 @@ main,
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--primary);
-}
-.contact-grid h4::after {
-  content: "";
-  display: block;
-  width: 28px;
-  height: 2px;
-  margin-top: 8px;
-  border-radius: 2px;
-  background: var(--orange);
+  padding-right: 34px;
 }
 .contact-grid p {
   margin-top: 10px;
