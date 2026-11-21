@@ -2098,6 +2098,23 @@ main,
 }
 .contact-grid a:hover { color: var(--orange); border-bottom-color: var(--orange); }
 .contact-grid > div:last-child p a { display: inline-block; margin-bottom: 2px; }
+.contact-grid > div:last-child p a.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.contact-grid .social-icon {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  fill: currentColor;
+}
+.contact-grid .social-facebook .social-icon { color: #1877f2; }
+.contact-grid .social-x .social-icon { color: var(--ink); }
+.contact-grid .social-whatsapp .social-icon { color: #25d366; }
+.contact-grid .social-youtube .social-icon { color: #ff0033; }
+.contact-grid a.social-link:hover .social-icon { color: var(--orange); }
+.social-defs { display: none; }
 .cpe {
   display: flex;
   align-items: center;
