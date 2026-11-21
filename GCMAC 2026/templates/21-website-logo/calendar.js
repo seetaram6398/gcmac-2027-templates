@@ -2,6 +2,19 @@
 (function () {
   var events = [
     {
+      date: new Date(2026, 11, 15),
+      title: "Early Bird registration closes",
+      short: "Early Bird closes",
+      type: "Early Bird",
+      color: "#F1883A",
+      desc: "Last date to register at the Early Bird delegate fee — The Ashok, New Delhi.",
+      agenda: [
+        "All day — Early Bird delegate fee closes",
+        "Save ₹2,000 on corporate and ₹1,000 on CMA delegate fees",
+        "Register by email: gcmac2027@icmai.in"
+      ]
+    },
+    {
       date: new Date(2027, 1, 12),
       title: "Day 1 · Foundations & Global Perspectives",
       short: "Day 1 · 6 sessions",
