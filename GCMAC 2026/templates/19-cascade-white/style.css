@@ -1421,6 +1421,14 @@ main,
   text-align: justify;
 }
 .welcome-copy p + p { margin-top: 14px; }
+.theme-list {
+  margin: 14px 0 0 20px;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.8;
+}
+.theme-list li { margin-bottom: 6px; }
 .welcome-copy p:first-child::first-letter {
   float: left;
   margin: 8px 10px 0 0;
