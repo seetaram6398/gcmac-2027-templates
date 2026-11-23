@@ -1,0 +1,15 @@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<section class="card narrow">
+    <h1>Something went wrong</h1>
+    <p>Please try again. If the problem continues, write to <a href="mailto:gcmac2027@icmai.in">gcmac2027@icmai.in</a>.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p class="note">Request ID: @Model.RequestId</p>
+    }
+    <a class="btn btn-secondary" asp-page="/Index">Go to registration</a>
+</section>

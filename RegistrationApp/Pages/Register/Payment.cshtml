@@ -1,0 +1,43 @@
+@page
+@model PaymentModel
+@{
+    ViewData["Title"] = "Payment";
+    var currency = Model.Registration.Currency == "USD" ? "$" : "\u20B9";
+}
+
+<section class="card">
+    <h1>Pay your delegate fee</h1>
+    <p class="lead">Registration <strong>@Model.Registration.Id</strong> &middot; @Model.Registration.FullName</p>
+
+    <table class="totals">
+        <tbody>
+            <tr><th>Delegate fee</th><td>@currency @Model.Registration.BaseFee.ToString("N2")</td></tr>
+            @if (Model.Registration.GstRate > 0)
+            {
+                <tr><th>GST (@(Model.Registration.GstRate * 100)%)</th><td>@currency @Model.Registration.GstAmount.ToString("N2")</td></tr>
+            }
+            <tr class="grand"><th>Amount payable</th><td>@currency @Model.Registration.TotalAmount.ToString("N2")</td></tr>
+        </tbody>
+    </table>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="validation">@Model.ErrorMessage</div>
+    }
+
+    <form method="post">
+        <fieldset>
+            <legend>Payment method</legend>
+            @foreach (var method in Model.Methods)
+            {
+                <label class="radio"><input type="radio" asp-for="Method" value="@method" /> @method</label>
+            }
+            <label>Payment reference / UTR (required for Offline) <input asp-for="Reference" /></label>
+        </fieldset>
+        <p class="note">Card, UPI and NetBanking are processed by the configured payment gateway. This build ships with a demo gateway; no card data is collected or stored here. Offline payments are verified by the secretariat.</p>
+        <div class="actions">
+            <button class="btn btn-primary" type="submit">Pay @currency @Model.Registration.TotalAmount.ToString("N2")</button>
+            <a class="btn btn-secondary" asp-page="MyRegistrations">Back to my registrations</a>
+        </div>
+    </form>
+</section>

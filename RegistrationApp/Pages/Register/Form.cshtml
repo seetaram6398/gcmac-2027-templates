@@ -1,0 +1,411 @@
+@page
+@model FormModel
+@{
+    var category = Model.Input.Category;
+    ViewData["Title"] = Model.CategoryName;
+    var badge = category switch
+    {
+        DelegateCategory.CorporateOthers => "01",
+        DelegateCategory.CmaPractice => "02",
+        DelegateCategory.Student => "03",
+        DelegateCategory.Foreign => "04",
+        _ => "05"
+    };
+    var heading = category switch
+    {
+        DelegateCategory.CorporateOthers => "Registration Form for Corporate Delegates & Others",
+        DelegateCategory.CmaPractice => "Delegate Registration Form — CMA in Practice / Self Sponsored CMAs",
+        DelegateCategory.Student => "Delegate Registration Form — Students",
+        DelegateCategory.Foreign => "Registration Form for Foreign Delegates",
+        _ => "Delegate Registration Form — Accompanying Spouse"
+    };
+    var intro = category switch
+    {
+        DelegateCategory.CorporateOthers => "Please fill in the organisation, signatory and delegate details. All fields marked * are mandatory.",
+        DelegateCategory.CmaPractice => "Please review the details fetched from the ICMAI directory and complete your delegate registration.",
+        DelegateCategory.Student => "Please fill in your student verification and delegate details. All fields marked * are mandatory.",
+        DelegateCategory.Foreign => "New delegate registration for overseas participants. Please use your international contact details.",
+        _ => "Please fill in the accompanying spouse details to complete the registration."
+    };
+}
+
+<section class="page-hero has-banner" style='--page-banner: url("@Url.Content("~/img/banner/inner-registration.png")")'>
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a asp-page="/Index">Home</a><span>/</span><a asp-page="/Register/Category">Registration</a><span>/</span><a asp-page="/Register/Category">Payment &amp; Registration</a><span>/</span><span aria-current="page">@Model.CategoryName</span>
+        </nav>
+        <h1>@Model.CategoryName</h1>
+        <p>@intro</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="form-shell reveal">
+            <div class="form-panel-head">
+                <span class="form-badge">@badge</span>
+                <div>
+                    <h2>@heading</h2>
+                    <p>Delegate fee: <strong>@Model.Fee.Format(Model.Fee.TotalAmount)</strong>
+                        @if (Model.Fee.IsEarlyBird)
+                        {
+                            <span class="badge">Early bird rate</span>
+                        }
+                    </p>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Notice))
+            {
+                <div class="notice" role="alert">@Model.Notice</div>
+            }
+
+            <form method="post">
+                <input type="hidden" asp-for="Input.Category" />
+                <input type="hidden" asp-for="SponsorMode" />
+                <input type="hidden" asp-for="Input.SponsorMemberNo" />
+                <input type="hidden" asp-for="Input.MemberVerified" />
+                <input type="hidden" asp-for="Input.RequireMemberVerification" />
+                <input type="hidden" asp-for="Input.ConfirmEmail" />
+                <div asp-validation-summary="All" class="validation"></div>
+
+                @if (category == DelegateCategory.CorporateOthers)
+                {
+                    <input type="hidden" asp-for="Input.DateOfBirth" />
+                    <input type="hidden" asp-for="Input.StudentRegistrationNo" />
+                    <input type="hidden" asp-for="Input.Country" value="India" />
+
+                    <h3 class="form-section-title">Organisation details</h3>
+                    <div class="form-grid">
+                        <div class="field field-full">
+                            <label asp-for="Input.OrganisationName">Organisation's Name <span class="required">*</span></label>
+                            <input asp-for="Input.OrganisationName" autocomplete="organization" required />
+                        </div>
+                        <div class="field field-full">
+                            <label asp-for="Input.OrganisationAddress">Address <span class="required">*</span></label>
+                            <textarea asp-for="Input.OrganisationAddress" rows="3" required></textarea>
+                        </div>
+                    </div>
+
+                    <h3 class="form-section-title">Details of the Signatory</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label asp-for="Input.SignatoryName">Name of the Signatory <span class="required">*</span></label>
+                            <input asp-for="Input.SignatoryName" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Designation">Designation <span class="required">*</span></label>
+                            <input asp-for="Input.Designation" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Mobile">Mobile No <span class="required">*</span></label>
+                            <input asp-for="Input.Mobile" inputmode="tel" autocomplete="tel" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Email">E-mail ID <span class="required">*</span></label>
+                            <input asp-for="Input.Email" type="email" autocomplete="email" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.OccupancyType">Category <span class="required">*</span></label>
+                            <select asp-for="Input.OccupancyType" required>
+                                <option value="">Select</option>
+                                <option value="Corporate Delegate">Corporate Delegate</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.MembershipNo">ICMAI Membership No. (if any)</label>
+                            <input asp-for="Input.MembershipNo" />
+                        </div>
+                    </div>
+
+                    <h3 class="form-section-title">Other Delegate Details</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label asp-for="Input.FullName">Delegate's Name <span class="required">*</span></label>
+                            <input asp-for="Input.FullName" autocomplete="name" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Gender">Gender <span class="required">*</span></label>
+                            <div class="radio-row">
+                                <label><input asp-for="Input.Gender" type="radio" value="M" /> Male</label>
+                                <label><input asp-for="Input.Gender" type="radio" value="F" /> Female</label>
+                                <label><input asp-for="Input.Gender" type="radio" value="O" /> Other</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Address">Address <span class="required">*</span></label>
+                            <textarea asp-for="Input.Address" rows="2" required></textarea>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.State">State <span class="required">*</span></label>
+                            <input asp-for="Input.State" autocomplete="address-level1" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.City">City <span class="required">*</span></label>
+                            <input asp-for="Input.City" autocomplete="address-level2" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.PinCode">PIN Code <span class="required">*</span></label>
+                            <input asp-for="Input.PinCode" autocomplete="postal-code" required />
+                        </div>
+                    </div>
+                }
+                else if (category == DelegateCategory.CmaPractice)
+                {
+                    <input type="hidden" asp-for="Input.MembershipNo" />
+                    <input type="hidden" asp-for="Input.OrganisationName" />
+                    <input type="hidden" asp-for="Input.OrganisationAddress" />
+                    <input type="hidden" asp-for="Input.SignatoryName" />
+                    <input type="hidden" asp-for="Input.OccupancyType" />
+                    <input type="hidden" asp-for="Input.DateOfBirth" />
+                    <input type="hidden" asp-for="Input.StudentRegistrationNo" />
+                    <input type="hidden" asp-for="Input.Gender" />
+                    <input type="hidden" asp-for="Input.Country" value="India" />
+                    <input type="hidden" asp-for="Input.GstDetailsRequired" value="false" />
+                    <input type="hidden" asp-for="Input.Gstin" />
+
+                    <div class="notice" role="note">
+                        <strong>Verified member:</strong> @Model.Input.MembershipNo — @Model.Input.FullName.
+                        Details marked * may be edited if they have changed.
+                    </div>
+                    @if (!Model.Input.MemberVerified)
+                    {
+                        <div class="notice" role="alert">Verify your ICMAI membership before continuing. <a asp-page="/Account/VerifyMember" asp-route-returnUrl="/Register/Form?category=CmaPractice">Verify now</a>.</div>
+                    }
+
+                    <h3 class="form-section-title">Delegate details</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label asp-for="Input.FullName">Delegate's Name <span class="required">*</span></label>
+                            <input asp-for="Input.FullName" autocomplete="name" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Designation">Designation <span class="required">*</span></label>
+                            <input asp-for="Input.Designation" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Mobile">Mobile No <span class="required">*</span></label>
+                            <input asp-for="Input.Mobile" inputmode="tel" autocomplete="tel" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Email">E-mail ID <span class="required">*</span></label>
+                            <input asp-for="Input.Email" type="email" autocomplete="email" required />
+                        </div>
+                        <div class="field field-full">
+                            <label asp-for="Input.Address">Address <span class="required">*</span></label>
+                            <textarea asp-for="Input.Address" rows="2" required></textarea>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.State">State <span class="required">*</span></label>
+                            <input asp-for="Input.State" autocomplete="address-level1" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.City">City <span class="required">*</span></label>
+                            <input asp-for="Input.City" autocomplete="address-level2" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.PinCode">PIN Code <span class="required">*</span></label>
+                            <input asp-for="Input.PinCode" autocomplete="postal-code" required />
+                        </div>
+                    </div>
+                }
+                else if (category == DelegateCategory.Student)
+                {
+                    <input type="hidden" asp-for="Input.MembershipNo" />
+                    <input type="hidden" asp-for="Input.OrganisationName" />
+                    <input type="hidden" asp-for="Input.OrganisationAddress" />
+                    <input type="hidden" asp-for="Input.SignatoryName" />
+                    <input type="hidden" asp-for="Input.Designation" />
+                    <input type="hidden" asp-for="Input.OccupancyType" />
+                    <input type="hidden" asp-for="Input.Gender" />
+                    <input type="hidden" asp-for="Input.Country" value="India" />
+                    <input type="hidden" asp-for="Input.GstDetailsRequired" value="false" />
+                    <input type="hidden" asp-for="Input.Gstin" />
+
+                    <h3 class="form-section-title">Student verification</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label asp-for="Input.StudentRegistrationNo">Registration No. <span class="required">*</span></label>
+                            <input asp-for="Input.StudentRegistrationNo" maxlength="12" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.DateOfBirth">Date of Birth (DD/MM/YYYY) <span class="required">*</span></label>
+                            <input asp-for="Input.DateOfBirth" inputmode="numeric" pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}" placeholder="DD/MM/YYYY" required />
+                        </div>
+                    </div>
+
+                    <h3 class="form-section-title">Delegate details</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label asp-for="Input.FullName">Delegate's Name <span class="required">*</span></label>
+                            <input asp-for="Input.FullName" autocomplete="name" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Mobile">Mobile No <span class="required">*</span></label>
+                            <input asp-for="Input.Mobile" inputmode="tel" autocomplete="tel" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Email">E-mail ID <span class="required">*</span></label>
+                            <input asp-for="Input.Email" type="email" autocomplete="email" required />
+                        </div>
+                        <div class="field field-full">
+                            <label asp-for="Input.Address">Address <span class="required">*</span></label>
+                            <textarea asp-for="Input.Address" rows="2" required></textarea>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.State">State <span class="required">*</span></label>
+                            <input asp-for="Input.State" autocomplete="address-level1" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.City">City <span class="required">*</span></label>
+                            <input asp-for="Input.City" autocomplete="address-level2" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.PinCode">PIN Code <span class="required">*</span></label>
+                            <input asp-for="Input.PinCode" autocomplete="postal-code" required />
+                        </div>
+                    </div>
+                }
+                else if (category == DelegateCategory.Foreign)
+                {
+                    <input type="hidden" asp-for="Input.MembershipNo" />
+                    <input type="hidden" asp-for="Input.OrganisationName" />
+                    <input type="hidden" asp-for="Input.OrganisationAddress" />
+                    <input type="hidden" asp-for="Input.SignatoryName" />
+                    <input type="hidden" asp-for="Input.Designation" />
+                    <input type="hidden" asp-for="Input.OccupancyType" />
+                    <input type="hidden" asp-for="Input.StudentRegistrationNo" />
+                    <input type="hidden" asp-for="Input.State" />
+                    <input type="hidden" asp-for="Input.GstDetailsRequired" value="false" />
+                    <input type="hidden" asp-for="Input.Gstin" />
+
+                    <div class="notice" role="note">Fee: USD 200, inclusive of applicable taxes. Please use your international contact number.</div>
+
+                    <h3 class="form-section-title">Delegate details</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label asp-for="Input.FullName">Full Name <span class="required">*</span></label>
+                            <input asp-for="Input.FullName" autocomplete="name" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Gender">Gender <span class="required">*</span></label>
+                            <div class="radio-row">
+                                <label><input asp-for="Input.Gender" type="radio" value="M" /> Male</label>
+                                <label><input asp-for="Input.Gender" type="radio" value="F" /> Female</label>
+                                <label><input asp-for="Input.Gender" type="radio" value="O" /> Other</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.DateOfBirth">Date of Birth (DD/MM/YYYY) <span class="required">*</span></label>
+                            <input asp-for="Input.DateOfBirth" inputmode="numeric" pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}" placeholder="DD/MM/YYYY" required />
+                        </div>
+                        <div class="field field-full">
+                            <label asp-for="Input.Address">Address <span class="required">*</span></label>
+                            <textarea asp-for="Input.Address" rows="2" required></textarea>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.City">City <span class="required">*</span></label>
+                            <input asp-for="Input.City" autocomplete="address-level2" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Country">Country <span class="required">*</span></label>
+                            <input asp-for="Input.Country" autocomplete="country-name" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.PinCode">PIN Code / Postal Code <span class="required">*</span></label>
+                            <input asp-for="Input.PinCode" autocomplete="postal-code" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Mobile">Mobile No <span class="required">*</span></label>
+                            <input asp-for="Input.Mobile" inputmode="tel" autocomplete="tel" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Email">E-mail ID <span class="required">*</span></label>
+                            <input asp-for="Input.Email" type="email" autocomplete="email" required />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <input type="hidden" asp-for="Input.MembershipNo" />
+                    <input type="hidden" asp-for="Input.OrganisationName" />
+                    <input type="hidden" asp-for="Input.OrganisationAddress" />
+                    <input type="hidden" asp-for="Input.SignatoryName" />
+                    <input type="hidden" asp-for="Input.Designation" />
+                    <input type="hidden" asp-for="Input.OccupancyType" />
+                    <input type="hidden" asp-for="Input.DateOfBirth" />
+                    <input type="hidden" asp-for="Input.StudentRegistrationNo" />
+                    <input type="hidden" asp-for="Input.Gender" />
+                    <input type="hidden" asp-for="Input.Country" value="India" />
+                    <input type="hidden" asp-for="Input.GstDetailsRequired" value="false" />
+                    <input type="hidden" asp-for="Input.Gstin" />
+
+                    <h3 class="form-section-title">Delegate details</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label asp-for="Input.FullName">Spouse Name <span class="required">*</span></label>
+                            <input asp-for="Input.FullName" autocomplete="name" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Mobile">Mobile No <span class="required">*</span></label>
+                            <input asp-for="Input.Mobile" inputmode="tel" autocomplete="tel" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Email">E-mail ID <span class="required">*</span></label>
+                            <input asp-for="Input.Email" type="email" autocomplete="email" required />
+                        </div>
+                        <div class="field field-full">
+                            <label asp-for="Input.Address">Address <span class="required">*</span></label>
+                            <textarea asp-for="Input.Address" rows="2" required></textarea>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.State">State <span class="required">*</span></label>
+                            <input asp-for="Input.State" autocomplete="address-level1" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.City">City <span class="required">*</span></label>
+                            <input asp-for="Input.City" autocomplete="address-level2" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.PinCode">PIN Code <span class="required">*</span></label>
+                            <input asp-for="Input.PinCode" autocomplete="postal-code" required />
+                        </div>
+                    </div>
+                }
+
+                @if (category == DelegateCategory.CorporateOthers)
+                {
+                    <h3 class="form-section-title">GST details</h3>
+                    <div class="form-grid">
+                        <div class="field field-full">
+                            <span class="field-label">Do you want to claim GST input credit? <span class="required">*</span></span>
+                            <div class="radio-row">
+                                <label><input asp-for="Input.GstDetailsRequired" type="radio" value="true" /> Yes</label>
+                                <label><input asp-for="Input.GstDetailsRequired" type="radio" value="false" /> No</label>
+                            </div>
+                        </div>
+                        <div class="field field-full">
+                            <label asp-for="Input.Gstin">GSTIN (if applicable)</label>
+                            <input asp-for="Input.Gstin" maxlength="15" />
+                        </div>
+                    </div>
+                }
+
+                <div class="field field-full">
+                    <label class="check"><input asp-for="Input.AgreeTerms" required /> I confirm that the details are correct and I accept the registration terms. The delegate fee is non-refundable.</label>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Submit Registration</button>
+                    @if (category == DelegateCategory.CmaPractice)
+                    {
+                        <a class="btn btn-secondary" asp-page="/Register/AddDelegate">Add delegate</a>
+                        <a class="btn btn-secondary" asp-page="/Member/Dashboard">Member dashboard</a>
+                    }
+                    <a class="btn btn-secondary" asp-page="Category">Back to categories</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

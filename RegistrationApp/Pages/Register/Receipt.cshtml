@@ -1,0 +1,56 @@
+@page
+@model ReceiptModel
+@{
+    ViewData["Title"] = "Receipt";
+    var symbol = Model.Registration.Currency == "USD" ? "$" : "\u20B9";
+}
+
+<section class="card receipt">
+    <div class="receipt-head">
+        <div>
+            <h1>GCMAC 2027</h1>
+            <p>Global Convention of Cost &amp; Management Accountants</p>
+            <p>12&ndash;14 February 2027 &middot; The Ashok, New Delhi</p>
+        </div>
+        <div class="receipt-id">
+            <span>Registration no.</span>
+            <strong>@Model.Registration.Id</strong>
+        </div>
+    </div>
+
+    <h2>Delegate receipt</h2>
+    <dl class="details">
+        <dt>Delegate name</dt><dd>@Model.Registration.FullName</dd>
+        <dt>Category</dt><dd>@Model.CategoryName</dd>
+        <dt>Email</dt><dd>@Model.Registration.Email</dd>
+        <dt>Mobile</dt><dd>@Model.Registration.Mobile</dd>
+        <dt>Payment status</dt><dd>@Model.Registration.PaymentStatus</dd>
+        @if (!string.IsNullOrWhiteSpace(Model.Registration.TransactionId))
+        {
+            <dt>Transaction ID</dt><dd>@Model.Registration.TransactionId</dd>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Registration.PaymentReference))
+        {
+            <dt>Payment reference</dt><dd>@Model.Registration.PaymentReference</dd>
+        }
+        <dt>Registration date</dt><dd>@Model.Registration.CreatedAt.ToString("dd MMM yyyy")</dd>
+    </dl>
+
+    <table class="totals">
+        <tbody>
+            <tr><th>Delegate fee</th><td>@symbol @Model.Registration.BaseFee.ToString("N2")</td></tr>
+            @if (Model.Registration.GstRate > 0)
+            {
+                <tr><th>GST (@(Model.Registration.GstRate * 100)%)</th><td>@symbol @Model.Registration.GstAmount.ToString("N2")</td></tr>
+            }
+            <tr class="grand"><th>Total paid</th><td>@symbol @Model.Registration.TotalAmount.ToString("N2")</td></tr>
+        </tbody>
+    </table>
+
+    <p class="note">This is a system-generated receipt. Fees are non-refundable. For queries, contact gcmac2027@icmai.in.</p>
+
+    <div class="actions no-print">
+        <button class="btn btn-primary" type="button" onclick="window.print()">Print receipt</button>
+        <a class="btn btn-secondary" asp-page="MyRegistrations">My registrations</a>
+    </div>
+</section>

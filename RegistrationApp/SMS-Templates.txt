@@ -1,0 +1,85 @@
+GCMAC 2027 - REGISTRATION & LOGIN SMS TEMPLATES
+==============================================
+
+PLACEHOLDERS
+{Name}        Delegate full name
+{RegId}       Registration number, e.g. GCMAC27-20261123-ABC123
+{Category}    Delegate category
+{Amount}      Total fee with currency
+{TxnId}       Gateway transaction ID
+{UTR}         Offline payment reference / UTR
+{PaymentLink} Link to complete payment
+{ReceiptLink} Link to download/print receipt
+{TrackLink}   Link to track registration
+{Email}       Account email address
+{OTP}         One-time password
+{Time}        Date and time of event
+{Device/IP}   Device or IP address used
+{ResetLink}   Password reset link
+
+REGISTRATION
+------------------------------------------------------------
+1. Account created
+GCMAC 2027: Account created for {Email}. Register your delegate pass at {PaymentLink}.
+
+2. Registration submitted - payment pending
+GCMAC 2027: Registration {RegId} received for {Name} ({Category}). Pay {Amount}: {PaymentLink}. Fee is non-refundable.
+
+3. Online payment success
+GCMAC 2027: Payment received for {RegId}. Txn {TxnId}, {Amount}. Receipt: {ReceiptLink}.
+
+4. Offline payment proof submitted
+GCMAC 2027: Payment ref {UTR} received for {RegId}. Status: Under Verification. You will be informed within 2 working days.
+
+5. Offline payment verified
+GCMAC 2027: Payment verified for {RegId}. Your registration is CONFIRMED. Receipt: {ReceiptLink}.
+
+6. Payment failed
+GCMAC 2027: Payment for {RegId} could not be completed. Retry: {PaymentLink}. If debited, the gateway/bank will refund it.
+
+7. Unpaid reminder (T-3 days)
+GCMAC 2027: {Name}, registration {RegId} is awaiting payment of {Amount}. Pay at {PaymentLink}.
+
+8. Pre-event confirmation (T-7 days)
+GCMAC 2027: {Name}, delegate pass {RegId} confirmed. 12-14 Feb 2027, The Ashok, New Delhi. Carry photo ID and receipt.
+
+9. Receipt link on request
+GCMAC 2027: Receipt for {RegId}: {ReceiptLink}.
+
+10. Details updated or corrected
+GCMAC 2027: Details for registration {RegId} were updated. Verify at {TrackLink}.
+
+11. Admin alert - new registration
+GCMAC 2027 Admin: New {RegId} - {Name}, {Category}, {Amount}.
+
+12. Admin alert - offline proof to verify
+GCMAC 2027 Admin: Offline ref {UTR} for {RegId}, {Amount}. Verify in Admin panel.
+
+LOGIN
+------------------------------------------------------------
+13. Login OTP
+GCMAC 2027: Your login OTP is {OTP}. Valid for 10 minutes. Do not share it with anyone.
+
+14. Login successful
+GCMAC 2027: You signed in at {Time} from {Device/IP}. If this was not you, write to gcmac2027@icmai.in.
+
+15. Failed login attempt
+GCMAC 2027: A failed sign-in was attempted on {Email} at {Time}. If it was not you, reset your password: {ResetLink}.
+
+16. Password reset request
+GCMAC 2027: Password reset requested for {Email}. Use OTP {OTP} or {ResetLink}. Valid for 30 minutes. Ignore if you did not request it.
+
+17. Password changed
+GCMAC 2027: Password for {Email} was changed at {Time}. If it was not you, contact the secretariat immediately.
+
+18. Account locked
+GCMAC 2027: Account {Email} is temporarily locked after repeated failed attempts. Try again in 30 minutes or reset: {ResetLink}.
+
+19. Admin login alert
+GCMAC 2027 Admin: Admin sign-in at {Time} from {Device/IP}.
+
+NOTES
+------------------------------------------------------------
+- India delivery requires DLT-registered templates, approved sender ID and consent/opt-out handling.
+- Templates 13, 15, 16 and 18 need OTP and password-reset features before they can be triggered.
+- The current app has no SMS gateway configured; these are the messages to wire in later.

@@ -1,0 +1,34 @@
+@page
+@model TrackModel
+@{
+    ViewData["Title"] = "Track registration";
+}
+
+<section class="card narrow">
+    <h1>Track a registration</h1>
+    <p class="lead">Enter the registration number from your confirmation and the delegate email address.</p>
+    <form method="post">
+        <div asp-validation-summary="All" class="validation"></div>
+        @if (Model.Searched && !string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="validation">@Model.ErrorMessage</div>
+        }
+        <label>Registration number <input asp-for="Id" placeholder="GCMAC27-20261123-ABC123" /></label>
+        <label>Delegate email <input asp-for="Email" type="email" autocomplete="email" /></label>
+        <button class="btn btn-primary" type="submit">Track</button>
+    </form>
+
+    @if (Model.Result is not null)
+    {
+        <div class="result">
+            <h2>@Model.Result.Id</h2>
+            <dl class="details">
+                <dt>Delegate</dt><dd>@Model.Result.FullName</dd>
+                <dt>Category</dt><dd>@Model.Result.Category</dd>
+                <dt>Payment status</dt><dd><span class="status @Model.Result.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@Model.Result.PaymentStatus</span></dd>
+                <dt>Amount</dt><dd>@(Model.Result.Currency == "USD" ? "$" : "\u20B9") @Model.Result.TotalAmount.ToString("N2")</dd>
+            </dl>
+            <a class="btn btn-secondary" asp-page="Receipt" asp-route-id="@Model.Result.Id">View receipt</a>
+        </div>
+    }
+</section>

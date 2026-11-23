@@ -1,0 +1,39 @@
+@page
+@model ConfirmationModel
+@{
+    ViewData["Title"] = "Confirmation";
+}
+
+<section class="card">
+    <div class="success-mark">&#10003;</div>
+    <h1>Registration submitted</h1>
+    <p class="lead">Thank you, @Model.Registration.FullName. Your registration number is <strong>@Model.Registration.Id</strong>.</p>
+
+    <dl class="details">
+        <dt>Delegate category</dt><dd>@Model.CategoryName</dd>
+        <dt>Payment status</dt><dd><span class="status @Model.Registration.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@Model.Registration.PaymentStatus</span></dd>
+        @if (!string.IsNullOrWhiteSpace(Model.Registration.TransactionId))
+        {
+            <dt>Transaction ID</dt><dd>@Model.Registration.TransactionId</dd>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Registration.PaymentReference))
+        {
+            <dt>Payment reference</dt><dd>@Model.Registration.PaymentReference</dd>
+        }
+        <dt>Amount</dt><dd>@(Model.Registration.Currency == "USD" ? "$" : "\u20B9") @Model.Registration.TotalAmount.ToString("N2")</dd>
+    </dl>
+
+    @if (Model.Registration.PaymentStatus == Models.PaymentStates.Verification)
+    {
+        <p class="note">Your offline payment proof has been recorded. The secretariat will verify it and update the status.</p>
+    }
+    else
+    {
+        <p class="note">A confirmation has been recorded. Please retain the receipt for your records.</p>
+    }
+
+    <div class="actions">
+        <a class="btn btn-primary" asp-page="Receipt" asp-route-id="@Model.Registration.Id">Download / print receipt</a>
+        <a class="btn btn-secondary" asp-page="MyRegistrations">My registrations</a>
+    </div>
+</section>

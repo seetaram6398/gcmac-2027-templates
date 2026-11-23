@@ -1,0 +1,33 @@
+@page
+@model PaymentReturnModel
+@{
+    ViewData["Title"] = "Payment status";
+}
+
+<section class="card narrow">
+    <span class="eyebrow">Payment gateway response</span>
+    <h1>@(Model.Success ? "Payment received" : "Payment not completed")</h1>
+    <p class="lead">@Model.Message</p>
+
+    @if (Model.Success && !string.IsNullOrWhiteSpace(Model.RegistrationId))
+    {
+        <p>Registration <strong>@Model.RegistrationId</strong> is confirmed.</p>
+        <div class="actions">
+            <a class="btn btn-primary" asp-page="Confirmation" asp-route-id="@Model.RegistrationId">View confirmation</a>
+            <a class="btn btn-secondary" asp-page="Receipt" asp-route-id="@Model.RegistrationId">Receipt</a>
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(Model.RegistrationId))
+    {
+        <div class="actions">
+            <a class="btn btn-primary" asp-page="Payment" asp-route-id="@Model.RegistrationId">Try again</a>
+            <a class="btn btn-secondary" asp-page="MyRegistrations">My registrations</a>
+        </div>
+    }
+    else
+    {
+        <div class="actions">
+            <a class="btn btn-secondary" asp-page="MyRegistrations">My registrations</a>
+        </div>
+    }
+</section>

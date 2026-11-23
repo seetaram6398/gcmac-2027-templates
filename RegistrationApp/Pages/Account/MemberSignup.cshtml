@@ -1,0 +1,255 @@
+@page
+@model MemberSignupModel
+@{
+    ViewData["Title"] = "CMA member signup";
+}
+
+<section class="page-hero has-banner" style='--page-banner: url("@Url.Content("~/img/banner/inner-registration.png")")'>
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a asp-page="/Index">Home</a><span>/</span><a asp-page="/Register/Category">Registration</a><span>/</span><span aria-current="page">CMA member signup</span>
+        </nav>
+        <h1>CMA in Practice / Self Sponsored CMAs</h1>
+        <p>Create your GCMAC 2027 account using your ICMAI membership number. Your member profile is fetched from the ICMAI directory and saved securely.</p>
+    </div>
+</section>
+
+<section class="section" id="members">
+    <div class="container">
+        <div class="form-shell reveal">
+            <div class="form-panel-head">
+                <span class="form-badge">02</span>
+                <div>
+                    <h2>Create your member account</h2>
+                    <p>Enter your membership number, verify the fetched details with OTP, then login to your member dashboard.</p>
+                </div>
+            </div>
+
+            <div class="notice" role="note">
+                <strong>Steps to register</strong>
+                <ul>
+                    <li>Enter your ICMAI membership number and click <b>Get Details</b>.</li>
+                    <li>Verify both your email id and mobile number using OTP. Current demo OTP: <strong>123456</strong>.</li>
+                    <li>After verification, your account is created and you can login using OTP only.</li>
+                </ul>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+            {
+                <div class="notice" role="status"><strong>@Model.SuccessMessage</strong></div>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Notice))
+            {
+                <div class="notice" role="status">@Model.Notice</div>
+            }
+
+            <form method="post">
+                <div asp-validation-summary="All" class="validation"></div>
+                <input type="hidden" name="DetailsLoaded" value="@(Model.DetailsLoaded ? "True" : "False")" />
+                @if (Model.DetailsLoaded)
+                {
+                    <input type="hidden" name="MembershipNo" value="@Model.MembershipNo" />
+                    <input type="hidden" name="MemberName" value="@Model.MemberName" />
+                    <input type="hidden" name="MemberMobile" value="@Model.MemberMobile" />
+                    <input type="hidden" name="MemberEmail" value="@Model.MemberEmail" />
+                    <input type="hidden" name="MemberDesignation" value="@Model.MemberDesignation" />
+                    <input type="hidden" name="MemberAddress" value="@Model.MemberAddress" />
+                    <input type="hidden" name="MemberCity" value="@Model.MemberCity" />
+                    <input type="hidden" name="MemberState" value="@Model.MemberState" />
+                    <input type="hidden" name="MemberPinCode" value="@Model.MemberPinCode" />
+                    <input type="hidden" name="MemberCountry" value="@Model.MemberCountry" />
+                    <input type="hidden" name="EmailOtpSent" value="@(Model.EmailOtpSent ? "True" : "False")" />
+                    <input type="hidden" name="MobileOtpSent" value="@(Model.MobileOtpSent ? "True" : "False")" />
+                    <input type="hidden" name="EmailVerified" value="@(Model.EmailVerified ? "True" : "False")" />
+                    <input type="hidden" name="MobileVerified" value="@(Model.MobileVerified ? "True" : "False")" />
+                    <input type="hidden" name="EmailOtpWindowOpen" value="@(Model.EmailOtpWindowOpen ? "True" : "False")" />
+                    <input type="hidden" name="MobileOtpWindowOpen" value="@(Model.MobileOtpWindowOpen ? "True" : "False")" />
+                }
+
+                <h3 class="form-section-title">Step 1 — Membership verification</h3>
+                <div class="form-grid">
+                    <div class="field field-full">
+                        <label asp-for="MembershipNo">Membership No. <span class="required">*</span></label>
+                        @if (Model.DetailsLoaded)
+                        {
+                            <input asp-for="MembershipNo" inputmode="numeric" pattern="[0-9]+" placeholder="Enter ICMAI membership number" required readonly />
+                        }
+                        else
+                        {
+                            <input asp-for="MembershipNo" inputmode="numeric" pattern="[0-9]+" placeholder="Enter ICMAI membership number" required />
+                        }
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit" asp-page-handler="GetDetails">Get Details</button>
+                </div>
+
+                @if (Model.DetailsLoaded)
+                {
+                    <h3 class="form-section-title">Step 2 — Fetched member details</h3>
+                    <table class="member-details-table">
+                        <tbody>
+                            <tr><th>Name</th><td>@Model.MemberName</td></tr>
+                            <tr><th>Membership No.</th><td>@Model.MembershipNo</td></tr>
+                            <tr><th>Mobile</th><td>@Model.MemberMobile</td></tr>
+                            <tr><th>Email</th><td>@Model.MemberEmail</td></tr>
+                        </tbody>
+                    </table>
+
+                    <h3 class="form-section-title">Step 3 — Verify email and mobile</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <span class="field-label">Email OTP</span>
+                            @if (Model.EmailVerified)
+                            {
+                                <span class="hint">Verified</span>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary btn-sm" type="submit" asp-page-handler="SendEmailOtp">Send OTP to email</button>
+                            }
+                        </div>
+                        <div class="field">
+                            <span class="field-label">Mobile OTP</span>
+                            @if (Model.MobileVerified)
+                            {
+                                <span class="hint">Verified</span>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary btn-sm" type="submit" asp-page-handler="SendMobileOtp">Send OTP to mobile</button>
+                            }
+                        </div>
+                    </div>
+
+                    @if (Model.EmailVerified && Model.MobileVerified)
+                    {
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit" asp-page-handler="CreateAccount">Create Account</button>
+                            <a class="btn btn-secondary" asp-page="/Account/Login">Already registered? Login</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-actions">
+                            <span class="hint">Verify both OTPs to enable account creation.</span>
+                        </div>
+                    }
+
+                    @if (Model.EmailOtpWindowOpen)
+                    {
+                        <div class="otp-window" role="dialog" aria-modal="true" aria-labelledby="email-otp-title">
+                            <div class="otp-window-card">
+                                <h3 id="email-otp-title">Verify email OTP</h3>
+                                <p>Enter the OTP sent to your email id. Demo OTP: <strong>@Model.DemoSecretValue</strong></p>
+                                <div class="field">
+                                    <label asp-for="EmailOtp">Email OTP</label>
+                                    <input asp-for="EmailOtp" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code" placeholder="Enter email OTP" />
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn btn-primary" type="submit" asp-page-handler="ValidateEmailOtp">Validate OTP</button>
+                                    <button class="btn btn-secondary" type="submit" asp-page-handler="CancelEmailOtp">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.MobileOtpWindowOpen)
+                    {
+                        <div class="otp-window" role="dialog" aria-modal="true" aria-labelledby="mobile-otp-title">
+                            <div class="otp-window-card">
+                                <h3 id="mobile-otp-title">Verify mobile OTP</h3>
+                                <p>Enter the OTP sent to your mobile number. Demo OTP: <strong>@Model.DemoSecretValue</strong></p>
+                                <div class="field">
+                                    <label asp-for="MobileOtp">Mobile OTP</label>
+                                    <input asp-for="MobileOtp" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code" placeholder="Enter mobile OTP" />
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn btn-primary" type="submit" asp-page-handler="ValidateMobileOtp">Validate OTP</button>
+                                    <button class="btn btn-secondary" type="submit" asp-page-handler="CancelMobileOtp">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </form>
+
+            @if (Model.DetailsLoaded && Model.EmailVerified && Model.MobileVerified)
+            {
+                <div id="delegate-registration" class="form-panel-head form-panel-divider">
+                    <span class="form-badge">03</span>
+                    <div>
+                        <h2>Delegate Registration Form — @Model.DelegateCategoryName</h2>
+                        <p>Delegate fee: <strong>@Model.DelegateFee.Format(Model.DelegateFee.TotalAmount)</strong> <span class="hint">@(Model.DelegateFee.IsEarlyBird ? "Early bird rate" : "Standard rate")</span></p>
+                        <p>Verified member:@Model.MembershipNo — @Model.MemberName. Details marked * may be edited if they have changed.</p>
+                    </div>
+                </div>
+
+                <form method="post">
+                    <div asp-validation-summary="All" class="validation"></div>
+                    <input type="hidden" name="DetailsLoaded" value="True" />
+                    <input type="hidden" name="MembershipNo" value="@Model.MembershipNo" />
+                    <input type="hidden" name="MemberName" value="@Model.MemberName" />
+                    <input type="hidden" name="MemberMobile" value="@Model.MemberMobile" />
+                    <input type="hidden" name="MemberEmail" value="@Model.MemberEmail" />
+                    <input type="hidden" name="MemberDesignation" value="@Model.MemberDesignation" />
+                    <input type="hidden" name="MemberAddress" value="@Model.MemberAddress" />
+                    <input type="hidden" name="MemberCity" value="@Model.MemberCity" />
+                    <input type="hidden" name="MemberState" value="@Model.MemberState" />
+                    <input type="hidden" name="MemberPinCode" value="@Model.MemberPinCode" />
+                    <input type="hidden" name="MemberCountry" value="@Model.MemberCountry" />
+                    <input type="hidden" name="EmailOtpSent" value="@(Model.EmailOtpSent ? "True" : "False")" />
+                    <input type="hidden" name="MobileOtpSent" value="@(Model.MobileOtpSent ? "True" : "False")" />
+                    <input type="hidden" name="EmailVerified" value="True" />
+                    <input type="hidden" name="MobileVerified" value="True" />
+                    <input type="hidden" name="EmailOtpWindowOpen" value="@(Model.EmailOtpWindowOpen ? "True" : "False")" />
+                    <input type="hidden" name="MobileOtpWindowOpen" value="@(Model.MobileOtpWindowOpen ? "True" : "False")" />
+
+                    <h3 class="form-section-title">Delegate details</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label asp-for="DelegateName">Delegate's Name <span class="required">*</span></label>
+                            <input asp-for="DelegateName" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="DelegateDesignation">Designation <span class="required">*</span></label>
+                            <input asp-for="DelegateDesignation" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="DelegateMobile">Mobile No <span class="required">*</span></label>
+                            <input asp-for="DelegateMobile" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="DelegateEmail">E-mail ID <span class="required">*</span></label>
+                            <input asp-for="DelegateEmail" type="email" required />
+                        </div>
+                        <div class="field field-full">
+                            <label asp-for="DelegateAddress">Address <span class="required">*</span></label>
+                            <textarea asp-for="DelegateAddress" rows="3" required></textarea>
+                        </div>
+                        <div class="field">
+                            <label asp-for="DelegateState">State <span class="required">*</span></label>
+                            <input asp-for="DelegateState" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="DelegateCity">City <span class="required">*</span></label>
+                            <input asp-for="DelegateCity" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="DelegatePinCode">PIN Code <span class="required">*</span></label>
+                            <input asp-for="DelegatePinCode" inputmode="numeric" pattern="[0-9]+" required />
+                        </div>
+                    </div>
+                    <label class="check">
+                        <input asp-for="DelegateAgreeTerms" required />
+                        <span>I confirm that the details are correct and I accept the registration terms. The delegate fee is non-refundable.</span>
+                    </label>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit" asp-page-handler="CreateDelegate">Save delegate &amp; continue to payment</button>
+                        <a class="btn btn-secondary" asp-page="/Register/MyRegistrations">My registrations</a>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+</section>

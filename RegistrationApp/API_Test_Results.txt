@@ -1,0 +1,143 @@
+GCMAC 2027 - API TEST RESULTS
+Date: 2026-11-23
+Note: API key, bearer token, passwords and member PII (name/mobile/email/address) are redacted.
+
+======================================================================
+1) MEMBER DETAILS API
+======================================================================
+
+Base URL
+  https://eicmai.in/member_gcmac_api
+
+Request (used by app and curl)
+  Method : GET
+  URL    : https://eicmai.in/member_gcmac_api/api/member/{memberNo}
+  Params : memberNo in path
+  Headers:
+    Accept: application/json
+    Member-Api-Key: [REDACTED - supplied via environment variable MemberApi__ApiKey]
+
+Tests run
+
+  A) No API key
+     GET /api/member/10001
+     Response HTTP 401
+     {"success":false,"message":"API key is required."}
+
+  B) Dummy API key
+     GET /api/member/10001
+     Header: Member-Api-Key: dummy
+     Response HTTP 401
+     {"success":false,"message":"Invalid API key."}
+
+  C) Valid API key, member 10001
+     Response HTTP 404
+     {"success":false,"message":"Member not found.","memberNo":"10001","memberName":null,"gender":null,"mobile":null,"email":null,"Designation":null,"ORGANISATION_NAME":null,"RADDRESS1":null,"RADDRESS2":null,"RADDRESS3":null,"RADDRESS4":null,"RCITY":null,"RSTATE":null,"RCOUNTRY":null,"RPIN":null}
+
+  D) Valid API key, member 10002
+     Response HTTP 200
+     {
+       "success": true,
+       "message": "Member details retrieved successfully",
+       "memberNo": "10002",
+       "memberName": "[REDACTED - non-null]",
+       "gender": "[REDACTED - non-null]",
+       "mobile": "[REDACTED - non-null]",
+       "email": "[REDACTED - non-null]",
+       "Designation": null,
+       "ORGANISATION_NAME": null,
+       "RADDRESS1": "[REDACTED - non-null]",
+       "RADDRESS2": "[REDACTED - non-null]",
+       "RADDRESS3": null,
+       "RADDRESS4": null,
+       "RCITY": "[REDACTED - non-null]",
+       "RSTATE": "[REDACTED - non-null]",
+       "RCOUNTRY": "[REDACTED - non-null]",
+       "RPIN": "[REDACTED - non-null]"
+     }
+
+  E) Valid API key, member 10003
+     Response HTTP 200
+     Same JSON shape as 10002; Designation and ORGANISATION_NAME were populated.
+     All personal fields redacted here.
+
+  F) Valid API key, member 10004
+     Response HTTP 200
+     Same JSON shape as 10002; RADDRESS3 was populated.
+     All personal fields redacted here.
+
+  G) Valid API key, non-numeric member "abc"
+     GET /api/member/abc
+     Response HTTP 400
+     {"Message":"Invalid member number."}
+
+  H) Earlier transient result
+     Before the successful retries, members 10001-10004 returned HTTP 500:
+     {"success":false,"message":"An error occurred while retrieving member details."}
+     This was not reproducible in the latest run.
+
+App-level verification (RegistrationApp)
+  Local app: http://localhost:5080/Account/MemberSignup
+  GET  -> HTTP 200
+  POST -> /Account/MemberSignup?handler=GetDetails
+         Parameter: MembershipNo=10002
+         Antiforgery token included from GET response.
+         Result: HTTP 200, page contained:
+           "Member details fetched from the ICMAI directory. Verify your email and mobile to continue."
+           "Step 2 — Fetched member details"
+
+  Dummy-key app run produced:
+    "ICMAI member directory authentication failed. Contact the secretariat."
+  This confirms the app sends the Member-Api-Key header correctly.
+
+Conclusion
+  Member API is working with the supplied key. 10002/10003/10004 return HTTP 200 with member data; 10001 returns HTTP 404. App fetch is confirmed for 10002.
+
+======================================================================
+2) STUDENT DETAILS API
+======================================================================
+
+Authentication request (from supplied Postman collection)
+  Method : POST
+  URL    : https://localhost:7124/api/Authenication
+  Query  : username=admin
+           password=[REDACTED - value present in supplied collection]
+  Result : Connection refused
+           curl error: Failed to connect to localhost port 7124
+           HTTP 000
+  Token  : Not received. JWT variable {{json_web_token_0us8}} could not be populated.
+
+Student details request
+  Method : POST
+  URL    : http://valueaddedcourses.eicmai.in/api/Student?RegNo=54832004240
+  Query  : RegNo=54832004240
+  Headers:
+    Content-Type: application/json
+    Authorization: Bearer [REDACTED - JWT from auth step; unavailable]
+  Body   : empty JSON body with Content-Length: 0
+
+Tests run
+
+  A) POST without body/content-length
+     Response HTTP 411
+     HTML body:
+       <h2>Length Required</h2>
+       <p>HTTP Error 411. The request must be chunked or have a content length.</p>
+
+  B) POST with empty body, no token
+     Response HTTP 401
+     Body: empty
+
+  C) POST with empty body, dummy bearer token
+     Header: Authorization: Bearer dummy
+     Response HTTP 401
+     Body: empty
+
+Conclusion
+  Student endpoint is reachable and correctly requires a bearer token. Details cannot be fetched until the local authentication service on port 7124 is running or a valid JWT is supplied.
+
+======================================================================
+3) OVERALL STATUS
+======================================================================
+  Member API : WORKING (valid key, app-level fetch confirmed for 10002)
+  Student API: BLOCKED (auth service localhost:7124 not running; valid JWT unavailable)

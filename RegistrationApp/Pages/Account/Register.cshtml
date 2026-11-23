@@ -1,0 +1,20 @@
+@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Create account";
+}
+
+<section class="card narrow">
+    <h1>Create your registration account</h1>
+    <p class="lead">Use one account for all your GCMAC 2027 delegate registrations.</p>
+    <form method="post">
+        <div asp-validation-summary="All" class="validation"></div>
+        <label>Email <input asp-for="Email" type="email" autocomplete="email" /></label>
+        <label>Password <input asp-for="Password" type="password" autocomplete="new-password" /></label>
+        <label>Confirm password <input asp-for="ConfirmPassword" type="password" autocomplete="new-password" /></label>
+        <div class="actions">
+            <button class="btn btn-primary" type="submit">Create account</button>
+            <a class="btn btn-secondary" asp-page="/Account/Login" asp-route-returnUrl="@Model.ReturnUrl">I already have an account</a>
+        </div>
+    </form>
+</section>

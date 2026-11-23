@@ -1,0 +1,28 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Registration";
+}
+
+<section class="page-hero has-banner" style='--page-banner: url("@Url.Content("~/img/banner/inner-registration.png")")'>
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a asp-page="/Index">Home</a><span>/</span><span aria-current="page">Registration</span>
+        </nav>
+        <h1>Payment &amp; Registration</h1>
+        <p>Select your delegate category to open the registration form, then complete the fee payment online. All delegate fees are exclusive of 18% GST.</p>
+        <div class="cta-actions">
+            <a class="btn btn-light" asp-page="/Register/Category">Start registration <span>→</span></a>
+            <a class="btn btn-outline" asp-page="/Register/Track">Track a registration</a>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="reg-help reveal">
+            <div><strong>Need help with payment?</strong><span>For registration or payment assistance, write to the GCMAC 2027 secretariat.</span></div>
+            <a class="btn btn-outline btn-sm" href="mailto:gcmac2027@icmai.in">Contact secretariat</a>
+        </div>
+    </div>
+</section>

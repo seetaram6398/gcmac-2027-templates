@@ -1,0 +1,85 @@
+@page
+@model CategoryModel
+@{
+    ViewData["Title"] = "Payment & Registration";
+    var index = 0;
+}
+
+<section class="page-hero has-banner" style='--page-banner: url("@Url.Content("~/img/banner/inner-registration.png")")'>
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a asp-page="/Index">Home</a><span>/</span><a asp-page="/Register/Category">Registration</a><span>/</span><span aria-current="page">Payment &amp; Registration</span>
+        </nav>
+        <h1>Payment &amp; Registration</h1>
+        <p>Select your delegate category to open the registration form, then complete the fee payment online. All delegate fees are exclusive of 18% GST.</p>
+    </div>
+</section>
+
+<section class="section" id="payment">
+    <div class="container">
+        <div class="section-head reveal">
+            <p class="eyebrow">Delegate categories</p>
+            <h2>Choose your registration type</h2>
+            <p>Each category opens a registration form with the relevant fields for that delegate type.</p>
+        </div>
+
+        <div class="pay-grid">
+            @foreach (var (option, fee) in Model.Pricing)
+            {
+                index++;
+                var href = option.Category switch
+                {
+                    DelegateCategory.CmaPractice => Url.Page("/Account/MemberSignup"),
+                    DelegateCategory.CorporateOthers => Url.Page("/Account/CorporateLogin", new { returnUrl = $"/Register/Form?category=CorporateOthers&sponsor={Model.Sponsor}" }),
+                    DelegateCategory.Student => Url.Page("/Account/StudentLogin", new { returnUrl = $"/Register/Form?category=Student&sponsor={Model.Sponsor}" }),
+                    DelegateCategory.Foreign => Url.Page("/Account/ForeignLogin", new { returnUrl = $"/Register/Form?category=Foreign&sponsor={Model.Sponsor}" }),
+                    _ => Url.Page("/Register/Form", new { category = option.Category.ToString(), sponsor = Model.Sponsor })
+                };
+                <a class="pay-card reveal" href="@href">
+                    <span class="pay-card-index">@index.ToString("00")</span>
+                    <h3>@option.Name</h3>
+                    <p>@option.Description</p>
+                    <span class="pay-card-link">Open form <span aria-hidden="true">→</span></span>
+                </a>
+            }
+        </div>
+
+        <div class="pay-fee-wrap reveal">
+            <h3>Delegate fee summary</h3>
+            <div class="fees">
+                <div class="fees-head"><span>Delegate category</span><span>Fee</span></div>
+                @if (Model.CorporateEarly.IsEarlyBird)
+                {
+                    <div class="fee-row is-early">
+                        <span><b>Corporate Delegates and Others</b><small>Early Birds · Till 15 December 2026</small></span>
+                        <b>@Model.CorporateEarly.Format(Model.CorporateEarly.BaseFee) <small>+ 18% GST</small><em class="fee-save">Save @Model.CorporateEarly.Format(Model.CorporateLate.BaseFee - Model.CorporateEarly.BaseFee)</em></b>
+                    </div>
+                }
+                <div class="fee-row">
+                    <span><b>Corporate Delegates and Others</b><small>After 15 December 2026</small></span>
+                    <b>@Model.CorporateLate.Format(Model.CorporateLate.BaseFee) <small>+ 18% GST</small></b>
+                </div>
+                @if (Model.MemberEarly.IsEarlyBird)
+                {
+                    <div class="fee-row is-early">
+                        <span><b>CMAs in Practice / Self Sponsored CMAs</b><small>Early Birds · Till 15 December 2026</small></span>
+                        <b>@Model.MemberEarly.Format(Model.MemberEarly.BaseFee) <small>+ 18% GST</small><em class="fee-save">Save @Model.MemberEarly.Format(Model.MemberLate.BaseFee - Model.MemberEarly.BaseFee)</em></b>
+                    </div>
+                }
+                <div class="fee-row">
+                    <span><b>CMAs in Practice / Self Sponsored CMAs</b><small>After 15 December 2026</small></span>
+                    <b>@Model.MemberLate.Format(Model.MemberLate.BaseFee) <small>+ 18% GST</small></b>
+                </div>
+                <div class="fee-row"><span>Accompanying Spouse</span><b>@Model.SpouseFee.Format(Model.SpouseFee.BaseFee) <small>+ 18% GST</small></b></div>
+                <div class="fee-row"><span>Students</span><b>@Model.StudentFee.Format(Model.StudentFee.BaseFee) <small>+ 18% GST</small></b></div>
+                <div class="fee-row"><span>Foreign Delegates</span><b>@Model.ForeignFee.Format(Model.ForeignFee.BaseFee)</b></div>
+            </div>
+            <p class="pay-note">Note: Participant fee is non-refundable. GST is payable extra at 18% wherever applicable.</p>
+        </div>
+
+        <div class="reg-help reveal">
+            <div><strong>Need help with payment?</strong><span>For registration or payment assistance, write to the GCMAC 2027 secretariat.</span></div>
+            <a class="btn btn-outline btn-sm" href="mailto:gcmac2027@icmai.in">Contact secretariat</a>
+        </div>
+    </div>
+</section>

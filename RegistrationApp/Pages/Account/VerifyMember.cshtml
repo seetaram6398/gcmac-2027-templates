@@ -1,0 +1,27 @@
+@page
+@model VerifyMemberModel
+@{
+    ViewData["Title"] = "Verify ICMAI membership";
+}
+
+<section class="card narrow">
+    <h1>Verify ICMAI membership</h1>
+    <p class="lead">Enter your ICMAI membership number. Details are fetched from the Institute directory.</p>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Message))
+    {
+        <div class="validation">@Model.Message</div>
+    }
+
+    <form method="post">
+        <input type="hidden" asp-for="ReturnUrl" />
+        <label>
+            Membership number
+            <input asp-for="MemberNumber" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required />
+        </label>
+        <div class="actions">
+            <button class="btn btn-primary" type="submit">Verify membership</button>
+            <a class="btn btn-secondary" asp-page="/Register/MyRegistrations">Cancel</a>
+        </div>
+    </form>
+</section>

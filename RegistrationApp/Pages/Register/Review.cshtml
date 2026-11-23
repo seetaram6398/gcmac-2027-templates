@@ -1,0 +1,61 @@
+@page
+@model ReviewModel
+@{
+    ViewData["Title"] = "Review registration";
+}
+
+<section class="card">
+    <h1>Review your registration</h1>
+    <p class="lead">Please check your details before continuing to payment.</p>
+
+    <h2>@Model.CategoryName</h2>
+    <dl class="details">
+        <dt>Delegate</dt><dd>@Model.Input.FullName</dd>
+        <dt>Email</dt><dd>@Model.Input.Email</dd>
+        <dt>Mobile</dt><dd>@Model.Input.Mobile</dd>
+        @if (!string.IsNullOrWhiteSpace(Model.Input.Designation))
+        {
+            <dt>Designation</dt><dd>@Model.Input.Designation</dd>
+        }
+        <dt>Address</dt><dd>@Model.Input.Address, @Model.Input.City, @Model.Input.State @Model.Input.PinCode @Model.Input.Country</dd>
+        @if (!string.IsNullOrWhiteSpace(Model.Input.OrganisationName))
+        {
+            <dt>Organisation</dt><dd>@Model.Input.OrganisationName</dd>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Input.MembershipNo))
+        {
+            <dt>Membership no.</dt><dd>@Model.Input.MembershipNo</dd>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Input.StudentRegistrationNo))
+        {
+            <dt>Student reg. no.</dt><dd>@Model.Input.StudentRegistrationNo</dd>
+        }
+        @if (Model.Input.GstDetailsRequired)
+        {
+            <dt>GSTIN</dt><dd>@Model.Input.Gstin</dd>
+        }
+    </dl>
+
+    <h2>Fee summary</h2>
+    <table class="totals">
+        <tbody>
+            <tr><th>Delegate fee</th><td>@Model.Fee.Format(Model.Fee.BaseFee)</td></tr>
+            @if (Model.Fee.GstRate > 0)
+            {
+                <tr><th>GST (@(Model.Fee.GstRate * 100)%)</th><td>@Model.Fee.Format(Model.Fee.GstAmount)</td></tr>
+            }
+            else
+            {
+                <tr><th>Taxes</th><td>Included</td></tr>
+            }
+            <tr class="grand"><th>Total payable</th><td>@Model.Fee.Format(Model.Fee.TotalAmount)</td></tr>
+        </tbody>
+    </table>
+
+    <div class="actions">
+        <form method="post" class="inline-form">
+            <button class="btn btn-primary" type="submit">Confirm and proceed to payment</button>
+        </form>
+        <a class="btn btn-secondary" asp-page="Form">Edit details</a>
+    </div>
+</section>

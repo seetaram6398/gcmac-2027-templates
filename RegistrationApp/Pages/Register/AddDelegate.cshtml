@@ -1,0 +1,200 @@
+@page
+@model AddDelegateModel
+@{
+    ViewData["Title"] = "Add delegate";
+}
+
+<section class="section member-page">
+    <div class="container member-layout">
+        @await Html.PartialAsync("_MemberSidebar")
+        <div class="member-content">
+            <section class="card">
+                <span class="eyebrow">ICMAI member @Model.MemberNo</span>
+                <h1>Other Delegate Details</h1>
+                <p class="lead">Please fill in the details of other delegate in the fields below in case you wish to register another delegate.</p>
+                <p>Delegate fee: <strong>@Model.Fee.Format(Model.Fee.TotalAmount)</strong> <span class="hint">@(Model.Fee.IsEarlyBird ? "Early bird rate" : "Standard rate")</span></p>
+                <p>@Model.MemberName — you can add up to @Model.Limit delegates. Category: <strong>@Model.CategoryName</strong>.</p>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Notice))
+                {
+                    <div class="notice" role="status"><strong>@Model.Notice</strong></div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.EditingId))
+                {
+                    <div class="notice" role="status">Editing delegate <strong>@Model.EditingId</strong>. Click Update to save changes.</div>
+                }
+
+                <form method="post">
+                    <div asp-validation-summary="All" class="validation"></div>
+                    <input type="hidden" asp-for="EditingId" />
+
+                    <h3 class="form-section-title">Other Delegate Details</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label asp-for="Input.OccupancyType">Occupancy Type <span class="required">*</span></label>
+                            <select asp-for="Input.OccupancyType" required>
+                                <option value="">Select</option>
+                                <option value="Corporate Delegate">Corporate Delegate</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.MembershipNo">ICMAI Membership No.</label>
+                            <input asp-for="Input.MembershipNo" inputmode="numeric" pattern="[0-9]+" />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.FullName">Delegate's Name <span class="required">*</span></label>
+                            <input asp-for="Input.FullName" autocomplete="name" required />
+                        </div>
+                        <div class="field">
+                            <span class="field-label">Gender <span class="required">*</span></span>
+                            <div class="radio-row">
+                                <label><input asp-for="Input.Gender" type="radio" value="M" required /> Male</label>
+                                <label><input asp-for="Input.Gender" type="radio" value="F" required /> Female</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Designation">Designation <span class="required">*</span></label>
+                            <input asp-for="Input.Designation" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Mobile">Mobile No. <span class="required">*</span></label>
+                            <input asp-for="Input.Mobile" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.Email">E-mail ID <span class="required">*</span></label>
+                            <input asp-for="Input.Email" type="email" autocomplete="email" required />
+                        </div>
+                        <div class="field field-full">
+                            <label asp-for="Input.Address">Address <span class="required">*</span></label>
+                            <textarea asp-for="Input.Address" rows="2" required></textarea>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.State">State <span class="required">*</span></label>
+                            <input asp-for="Input.State" autocomplete="address-level1" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.City">City <span class="required">*</span></label>
+                            <input asp-for="Input.City" autocomplete="address-level2" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.PinCode">Pin Code <span class="required">*</span></label>
+                            <input asp-for="Input.PinCode" inputmode="numeric" pattern="[0-9]+" required />
+                        </div>
+                    </div>
+
+                    <h3 class="form-section-title">Corporate details</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label asp-for="Input.OrganisationName">Organisation Name <span class="required">*</span></label>
+                            <input asp-for="Input.OrganisationName" required />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Input.SignatoryName">Signatory Name <span class="required">*</span></label>
+                            <input asp-for="Input.SignatoryName" required />
+                        </div>
+                        <div class="field field-full">
+                            <label asp-for="Input.OrganisationAddress">Organisation Address <span class="required">*</span></label>
+                            <textarea asp-for="Input.OrganisationAddress" rows="2" required></textarea>
+                        </div>
+                        <div class="field field-full">
+                            <span class="field-label">Do you want fill your GST Details? <span class="required">*</span></span>
+                            <div class="radio-row">
+                                <label><input asp-for="Input.GstDetailsRequired" type="radio" value="true" required /> Yes</label>
+                                <label><input asp-for="Input.GstDetailsRequired" type="radio" value="false" required /> No</label>
+                            </div>
+                        </div>
+                        <div id="gstin-field" class="field field-full @(Model.Input.GstDetailsRequired ? "" : "is-hidden")">
+                            <label asp-for="Input.Gstin">GSTIN <span class="required">*</span></label>
+                            <input asp-for="Input.Gstin" maxlength="15" />
+                        </div>
+                    </div>
+
+                    <label class="check">
+                        <input asp-for="Input.AgreeTerms" required />
+                        <span>I confirm that the details are correct and I accept the registration terms. The delegate fee is non-refundable.</span>
+                    </label>
+
+                    <div class="actions delegate-actions">
+                        <button class="btn btn-primary" type="submit" asp-page-handler="AddDelegate">Add Delegate</button>
+                        <button class="btn btn-secondary" type="submit" asp-page-handler="PayNow">Pay Now</button>
+                        @if (string.IsNullOrWhiteSpace(Model.EditingId))
+                        {
+                            <button class="btn btn-secondary" type="submit" asp-page-handler="Update" disabled>Update</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary" type="submit" asp-page-handler="Update">Update</button>
+                        }
+                        <button class="btn btn-secondary" type="submit" asp-page-handler="Reset">Reset</button>
+                        <a class="btn btn-secondary" asp-page="/Account/Logout">Logout</a>
+                    </div>
+                </form>
+
+                <h2>Added delegates</h2>
+                @if (Model.Delegates.Count == 0)
+                {
+                    <div class="notice" role="status">No delegates added yet.</div>
+                }
+                else
+                {
+                    <div class="table-wrap delegate-table-wrap">
+                        <table class="delegate-table">
+                            <thead>
+                                <tr>
+                                    <th>Occupancy Type</th>
+                                    <th>ICMAI Membership No.</th>
+                                    <th>Delegate's Name</th>
+                                    <th>Gender</th>
+                                    <th>Designation</th>
+                                    <th>Mobile No.</th>
+                                    <th>Email ID</th>
+                                    <th>Address</th>
+                                    <th>State</th>
+                                    <th>City</th>
+                                    <th>Pin Code</th>
+                                    <th>Payment</th>
+                                    <th>Edit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Delegates)
+                                {
+                                    <tr>
+                                        <td>@Model.Text(item.OccupancyType)</td>
+                                        <td>@Model.Text(item.MembershipNo)</td>
+                                        <td><strong>@item.FullName</strong></td>
+                                        <td>@Model.GenderLabel(item.Gender)</td>
+                                        <td>@Model.Text(item.Designation)</td>
+                                        <td>@Model.Text(item.Mobile)</td>
+                                        <td>@Model.Text(item.Email)</td>
+                                        <td>@Model.Text(item.Address)</td>
+                                        <td>@Model.Text(item.State)</td>
+                                        <td>@Model.Text(item.City)</td>
+                                        <td>@Model.Text(item.PinCode)</td>
+                                        <td><span class="status status-@item.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@item.PaymentStatus</span><br /><a asp-page="Payment" asp-route-id="@item.Id">Pay / view</a></td>
+                                        <td class="row-actions"><a asp-page-handler="Edit" asp-route-id="@item.Id">Edit</a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+</section>
+
+<script>
+    (function () {
+        var yes = document.querySelector('input[name="Input.GstDetailsRequired"][value="true"]');
+        var no = document.querySelector('input[name="Input.GstDetailsRequired"][value="false"]');
+        var field = document.getElementById('gstin-field');
+        function toggle() {
+            if (field && yes) field.classList.toggle('is-hidden', !yes.checked);
+        }
+        if (yes) yes.addEventListener('change', toggle);
+        if (no) no.addEventListener('change', toggle);
+        toggle();
+    })();
+</script>

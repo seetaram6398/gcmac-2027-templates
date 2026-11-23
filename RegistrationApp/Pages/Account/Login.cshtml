@@ -1,0 +1,77 @@
+@page
+@model LoginModel
+@{
+    ViewData["Title"] = "CMA member login";
+}
+
+<section class="page-hero has-banner" style='--page-banner: url("@Url.Content("~/img/banner/inner-registration.png")")'>
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a asp-page="/Index">Home</a><span>/</span><a asp-page="/Register/Category">Registration</a><span>/</span><a asp-page="/Register/Category">Payment &amp; Registration</a><span>/</span><span aria-current="page">CMA Members</span>
+        </nav>
+        <h1>CMA in Practice / Self Sponsored CMAs</h1>
+        <p>Login with your ICMAI membership number and OTP to open your member dashboard.</p>
+    </div>
+</section>
+
+<section class="section" id="members">
+    <div class="container">
+        <div class="form-shell reveal">
+            <div class="form-panel-head">
+                <span class="form-badge">02</span>
+                <div>
+                    <h2>Login for CMA in Practice / Self Sponsored CMAs</h2>
+                    <p>Member category supports OTP-based login only.</p>
+                </div>
+            </div>
+
+            <div class="notice" role="note">
+                <strong>Instructions for Login</strong>
+                <ul>
+                    <li>Enter your ICMAI membership number and click <b>Send OTP</b>.</li>
+                    <li>Current demo OTP: <strong>@Model.DemoSecretValue</strong>.</li>
+                    <li>If you have not created your account yet, <a asp-page="/Account/MemberSignup">sign up here</a> first.</li>
+                </ul>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Notice))
+            {
+                <div class="notice" role="status"><strong>@Model.Notice</strong></div>
+            }
+
+            <form method="post" action="/Account/Login">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ReturnUrl" />
+                <input type="hidden" name="Created" value="@(Model.Created ? "True" : "False")" />
+                <div asp-validation-summary="All" class="validation"></div>
+                <div class="form-grid">
+                    <div class="field field-full">
+                        <label asp-for="MembershipNo">User Name (Membership No.) <span class="required">*</span></label>
+                        <input asp-for="MembershipNo" inputmode="numeric" pattern="[0-9]+" autocomplete="username" required />
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" type="submit" asp-page-handler="SendOtp">Send OTP</button>
+                    <a class="btn btn-secondary" asp-page="/Register/Category">Back to categories</a>
+                    <a class="btn btn-secondary" asp-page="/Account/MemberSignup">Member signup</a>
+                </div>
+
+                @if (Model.ShowOtpWindow)
+                {
+                    <div class="otp-inline" role="group" aria-labelledby="otpTitle">
+                        <span class="form-badge">OTP</span>
+                        <h3 id="otpTitle">One-time password verification</h3>
+                        <p>Enter the OTP sent to your registered email id and mobile number. Demo OTP: <strong>@Model.DemoSecretValue</strong>.</p>
+                        <div class="field">
+                            <label asp-for="Otp">OTP <span class="required">*</span></label>
+                            <input asp-for="Otp" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code" autofocus />
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Verify &amp; Login</button>
+                        </div>
+                    </div>
+                }
+            </form>
+        </div>
+    </div>
+</section>

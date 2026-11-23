@@ -1,0 +1,23 @@
+@{
+    var memberNo = Context.Session.GetString(SessionKeys.VerifiedMemberNo) ?? "";
+    var memberName = Context.Session.GetString(SessionKeys.VerifiedMemberName) ?? "Member";
+    var pageTitle = ViewData["Title"]?.ToString() ?? "";
+    string Active(string label) => pageTitle.Contains(label, StringComparison.OrdinalIgnoreCase) ? " active" : "";
+}
+<aside class="member-sidebar no-print" aria-label="Member actions">
+    <div class="member-sidebar-profile">
+        <span class="eyebrow">Member panel</span>
+        <h2>@memberName</h2>
+        <p>Membership No: <strong>@memberNo</strong></p>
+    </div>
+    <nav class="member-sidebar-nav">
+        <a class="@Active("dashboard")" asp-page="/Member/Dashboard">Dashboard</a>
+        <a class="@Active("delegate")" href="/Account/MemberSignup#delegate-registration">Delegate registration</a>
+        <a asp-page="/Register/Form" asp-route-category="CmaPractice">Register for event</a>
+        <a asp-page="/Register/AddDelegate">Add delegate</a>
+        <a asp-page="/Register/MyRegistrations">My registrations &amp; payment</a>
+        <a asp-page="/Register/Category">Other categories</a>
+        <a asp-page="/Register/Track">Track registration</a>
+        <a class="member-sidebar-logout" asp-page="/Account/Logout">Logout</a>
+    </nav>
+</aside>
