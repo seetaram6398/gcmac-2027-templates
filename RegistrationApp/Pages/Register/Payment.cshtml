@@ -1,6 +1,7 @@
 @page
 @model PaymentModel
 @{
+    Layout = "_MemberLayout";
     ViewData["Title"] = "Payment";
     var currency = Model.Registration.Currency == "USD" ? "$" : "\u20B9";
 }

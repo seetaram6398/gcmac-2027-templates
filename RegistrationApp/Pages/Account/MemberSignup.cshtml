@@ -1,6 +1,7 @@
 @page
 @model MemberSignupModel
 @{
+    Layout = string.IsNullOrWhiteSpace(HttpContext.Session.GetString(SessionKeys.VerifiedMemberNo)) ? "_Layout" : "_MemberLayout";
     ViewData["Title"] = "CMA member signup";
 }
 

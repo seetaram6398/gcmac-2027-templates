@@ -17,6 +17,16 @@ document.addEventListener("DOMContentLoaded", function () {
         syncGst();
     }
 
+    var memberSidebarToggle = document.querySelector("[data-member-sidebar-toggle]");
+    if (memberSidebarToggle) {
+        memberSidebarToggle.addEventListener("click", function () {
+            var sidebar = memberSidebarToggle.closest(".member-sidebar");
+            if (!sidebar) return;
+            var open = sidebar.classList.toggle("open");
+            memberSidebarToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+    }
+
     document.querySelectorAll("form").forEach(function (form) {
         if (!form.querySelector('input[name="Method"]')) return;
         form.addEventListener("submit", function (event) {

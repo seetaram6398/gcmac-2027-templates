@@ -1,13 +1,10 @@
 @page
 @model AddDelegateModel
 @{
+    Layout = "_MemberLayout";
     ViewData["Title"] = "Add delegate";
 }
 
-<section class="section member-page">
-    <div class="container member-layout">
-        @await Html.PartialAsync("_MemberSidebar")
-        <div class="member-content">
             <section class="card">
                 <span class="eyebrow">ICMAI member @Model.MemberNo</span>
                 <h1>Other Delegate Details</h1>
@@ -181,9 +178,6 @@
                     </div>
                 }
             </section>
-        </div>
-    </div>
-</section>
 
 <script>
     (function () {

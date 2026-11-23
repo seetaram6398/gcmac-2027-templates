@@ -1,6 +1,7 @@
 @page
 @model ReceiptModel
 @{
+    Layout = "_MemberLayout";
     ViewData["Title"] = "Receipt";
     var symbol = Model.Registration.Currency == "USD" ? "$" : "\u20B9";
 }

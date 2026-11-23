@@ -1,13 +1,10 @@
 @page
 @model MyRegistrationsModel
 @{
+    Layout = "_MemberLayout";
     ViewData["Title"] = "My registrations";
 }
 
-<section class="section member-page">
-    <div class="container member-layout">
-        @await Html.PartialAsync("_MemberSidebar")
-        <div class="member-content">
 <section class="card">
     <div class="heading-row">
         <div>
@@ -59,7 +56,4 @@
             </tbody>
         </table>
     }
-</section>
-        </div>
-    </div>
 </section>

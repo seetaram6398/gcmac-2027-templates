@@ -1,6 +1,7 @@
 @page
 @model FormModel
 @{
+    Layout = "_MemberLayout";
     var category = Model.Input.Category;
     ViewData["Title"] = Model.CategoryName;
     var badge = category switch

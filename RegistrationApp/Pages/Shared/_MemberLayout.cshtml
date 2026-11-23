@@ -1,0 +1,35 @@
+@{
+    Layout = "_Layout";
+    var memberNo = ViewContext.HttpContext.Session.GetString(SessionKeys.VerifiedMemberNo);
+    var rawName = ViewContext.HttpContext.Session.GetString(SessionKeys.VerifiedMemberName);
+    var displayName = string.IsNullOrWhiteSpace(rawName) ? "Member" : rawName;
+    var firstName = displayName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
+}
+@if (string.IsNullOrWhiteSpace(memberNo))
+{
+    @RenderBody()
+}
+else
+{
+    <section class="section member-page member-shell-section">
+        <div class="member-shell">
+            @await Html.PartialAsync("_MemberSidebar")
+            <div class="member-content">
+                <div class="member-topbar no-print">
+                    <div class="member-topbar-title">
+                        <span>Member workspace</span>
+                        <strong>Welcome back, @firstName</strong>
+                    </div>
+                    <div class="member-topbar-actions">
+                        <span class="member-id-chip"><i></i>@memberNo</span>
+                        <a class="member-topbar-link" asp-page="/Register/Track">Track registration</a>
+                        <a class="btn btn-primary btn-sm" asp-page="/Register/AddDelegate">Add delegate</a>
+                    </div>
+                </div>
+                <div class="member-page-body">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </section>
+}
