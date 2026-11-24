@@ -283,6 +283,11 @@ namespace Gcmac.Registration.Data.Migrations
                     b.Property<bool>("IsEarlyBird")
                         .HasColumnType("bit");
 
+                    b.Property<string>("MembershipId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
                     b.Property<string>("MembershipNo")
                         .HasColumnType("nvarchar(max)");
 
@@ -341,6 +346,8 @@ namespace Gcmac.Registration.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountEmail");
+
+                    b.HasIndex("MembershipId");
 
                     b.HasIndex("PaymentStatus");
 

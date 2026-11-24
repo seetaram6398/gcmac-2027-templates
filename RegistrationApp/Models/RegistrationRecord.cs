@@ -10,6 +10,7 @@ public static class PaymentStates
 public sealed class RegistrationRecord
 {
     public string Id { get; set; } = "";
+    public string MembershipId { get; set; } = "";
     public string AccountEmail { get; set; } = "";
     public DelegateCategory Category { get; set; }
     public string FullName { get; set; } = "";
@@ -50,6 +51,9 @@ public sealed class RegistrationRecord
     public static RegistrationRecord From(RegistrationInput input, string id, string accountEmail, FeeBreakdown fee) => new()
     {
         Id = id,
+        MembershipId = MembershipIds.Build(
+            input.SponsorMemberNo ?? (input.Category == DelegateCategory.CmaPractice ? input.MembershipNo : null),
+            input.FullName),
         AccountEmail = accountEmail,
         Category = input.Category,
         FullName = input.FullName.Trim(),

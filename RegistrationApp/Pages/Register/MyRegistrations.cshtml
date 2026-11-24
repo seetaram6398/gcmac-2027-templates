@@ -32,12 +32,13 @@
     {
         <table>
             <thead>
-                <tr><th>Registration</th><th>Delegate</th><th>Category</th><th>Amount</th><th>Status</th><th></th></tr>
+                <tr><th>Membership ID</th><th>Registration</th><th>Delegate</th><th>Category</th><th>Amount</th><th>Status</th><th></th></tr>
             </thead>
             <tbody>
                 @foreach (var item in Model.Registrations)
                 {
                     <tr>
+                        <td><strong>@item.MembershipId</strong></td>
                         <td><strong>@item.Id</strong><br /><small>@item.CreatedAt.ToString("dd MMM yyyy")</small></td>
                         <td>@item.FullName</td>
                         <td>@Model.CategoryName(item.Category)</td>

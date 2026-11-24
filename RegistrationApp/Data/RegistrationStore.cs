@@ -169,6 +169,14 @@ public sealed class RegistrationStore
             {
                 while (state.Registrations.Any(r => r.Id == record.Id))
                     record.Id = GenerateId();
+                if (!string.IsNullOrWhiteSpace(record.MembershipId))
+                {
+                    var baseId = record.MembershipId;
+                    var suffix = 2;
+                    while (state.Registrations.Any(r =>
+                        string.Equals(r.MembershipId, record.MembershipId, StringComparison.OrdinalIgnoreCase)))
+                        record.MembershipId = $"{baseId}-{suffix++}";
+                }
                 state.Registrations.Add(record);
                 return record;
             });
@@ -176,6 +184,14 @@ public sealed class RegistrationStore
         await using var db = await _factory.CreateDbContextAsync(cancellationToken);
         while (await db.Registrations.AnyAsync(r => r.Id == record.Id, cancellationToken))
             record.Id = GenerateId();
+        if (!string.IsNullOrWhiteSpace(record.MembershipId))
+        {
+            var baseId = record.MembershipId;
+            var suffix = 2;
+            while (await db.Registrations.AnyAsync(
+                r => r.MembershipId == record.MembershipId, cancellationToken))
+                record.MembershipId = $"{baseId}-{suffix++}";
+        }
         db.Registrations.Add(record);
         await db.SaveChangesAsync(cancellationToken);
         return record;

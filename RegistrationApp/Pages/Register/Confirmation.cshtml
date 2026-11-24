@@ -11,6 +11,7 @@
     <p class="lead">Thank you, @Model.Registration.FullName. Your registration number is <strong>@Model.Registration.Id</strong>.</p>
 
     <dl class="details">
+        <dt>Membership ID</dt><dd>@Model.Registration.MembershipId</dd>
         <dt>Delegate category</dt><dd>@Model.CategoryName</dd>
         <dt>Payment status</dt><dd><span class="status @Model.Registration.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@Model.Registration.PaymentStatus</span></dd>
         @if (!string.IsNullOrWhiteSpace(Model.Registration.TransactionId))

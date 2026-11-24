@@ -10,7 +10,7 @@ public sealed class AdminModel(Services.RegistrationService service, FeeCatalog 
     public string CategoryName(DelegateCategory category) => fees.NameOf(category);
 
     private IActionResult? Denied() =>
-        IsAdmin ? null : RedirectToPage("/Account/Login", new { returnUrl = "/Admin/Index" });
+        IsAdmin ? null : RedirectToPage("/Account/SignIn", new { type = "admin", returnUrl = "/Admin/Index" });
 
     public async Task<IActionResult> OnGetAsync()
     {

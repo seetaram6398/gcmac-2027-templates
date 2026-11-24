@@ -44,4 +44,26 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    var authPanes = document.querySelector("[data-auth-active]");
+    if (authPanes) {
+        var authTabs = Array.prototype.slice.call(document.querySelectorAll(".auth-tab[data-auth-target]"));
+        var authSections = Array.prototype.slice.call(document.querySelectorAll("[data-auth-pane]"));
+        var selectAuthTab = function (target) {
+            authTabs.forEach(function (tab) {
+                var active = tab.getAttribute("data-auth-target") === target;
+                tab.classList.toggle("is-active", active);
+                tab.setAttribute("aria-selected", active ? "true" : "false");
+            });
+            authSections.forEach(function (pane) {
+                pane.classList.toggle("is-active", pane.getAttribute("data-auth-pane") === target);
+            });
+        };
+        authTabs.forEach(function (tab) {
+            tab.addEventListener("click", function () {
+                selectAuthTab(tab.getAttribute("data-auth-target"));
+            });
+        });
+        selectAuthTab(authPanes.getAttribute("data-auth-active") || "delegate");
+    }
 });

@@ -1,0 +1,265 @@
+@page
+@model RegistrationModel
+@{
+    Layout = "_MemberLayout";
+    ViewData["Title"] = "Registration & delegates";
+}
+
+<section class="card member-registration-card">
+    <div class="heading-row">
+        <div>
+            <span class="eyebrow">Member workspace · @Model.MemberNo</span>
+            <h1>Member registration &amp; delegates</h1>
+            <p class="lead">Register yourself and add delegates under the same form. Every record gets a membership ID from your membership number and the delegate's name.</p>
+        </div>
+        <div class="member-id-preview">
+            <span>Membership ID format</span>
+            <strong>@Model.MemberNo-NAME</strong>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Notice))
+    {
+        <div class="notice" role="status"><strong>@Model.Notice</strong></div>
+    }
+    @if (Model.SavedMembershipIds.Count > 0)
+    {
+        <div class="member-saved-ids" role="status">
+            @foreach (var saved in Model.SavedMembershipIds)
+            {
+                <span>@saved</span>
+            }
+        </div>
+    }
+
+    <form method="post">
+        <div asp-validation-summary="All" class="validation"></div>
+        <input type="hidden" asp-for="Input.ConfirmEmail" />
+
+        <h3 class="form-section-title">Your registration</h3>
+        <div class="form-grid">
+            <div class="field">
+                <label asp-for="Input.FullName">Your name <span class="required">*</span></label>
+                <input asp-for="Input.FullName" autocomplete="name" required />
+            </div>
+            <div class="field">
+                <label asp-for="Input.Designation">Designation <span class="required">*</span></label>
+                <input asp-for="Input.Designation" required />
+            </div>
+            <div class="field">
+                <label asp-for="Input.Mobile">Mobile No. <span class="required">*</span></label>
+                <input asp-for="Input.Mobile" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required />
+            </div>
+            <div class="field">
+                <label asp-for="Input.Email">E-mail ID <span class="required">*</span></label>
+                <input asp-for="Input.Email" type="email" autocomplete="email" required />
+            </div>
+            <div class="field field-full">
+                <label asp-for="Input.Address">Address <span class="required">*</span></label>
+                <textarea asp-for="Input.Address" rows="2" required></textarea>
+            </div>
+            <div class="field">
+                <label asp-for="Input.State">State <span class="required">*</span></label>
+                <input asp-for="Input.State" required />
+            </div>
+            <div class="field">
+                <label asp-for="Input.City">City <span class="required">*</span></label>
+                <input asp-for="Input.City" required />
+            </div>
+            <div class="field">
+                <label asp-for="Input.PinCode">PIN Code <span class="required">*</span></label>
+                <input asp-for="Input.PinCode" inputmode="numeric" required />
+            </div>
+            <div class="field">
+                <label asp-for="Input.Country">Country</label>
+                <input asp-for="Input.Country" />
+            </div>
+        </div>
+        <label class="check">
+            <input asp-for="Input.AgreeTerms" required />
+            <span>I confirm that my details are correct and I accept the registration terms.</span>
+        </label>
+
+        <div class="member-delegate-heading">
+            <div>
+                <h3 class="form-section-title">Add delegates</h3>
+                <p class="hint">Use the logged-in member's number @Model.MemberNo for every delegate. @Model.SavedDelegates.Count of @Model.Limit delegates already added.</p>
+            </div>
+            <button class="btn btn-secondary" type="button" data-member-delegate-add @(Model.CanAddDelegate ? "" : "disabled")>+ Add another delegate</button>
+        </div>
+
+        <div class="member-delegate-rows">
+            @for (var index = 0; index < Model.Limit; index++)
+            {
+                <div class="member-delegate-row@(index == 0 ? "" : " is-hidden")" data-member-delegate-row>
+                    <div class="member-delegate-row-head">
+                        <strong>Delegate @(index + 1)</strong>
+                        <span class="hint">Membership ID: @Model.MemberNo-DELEGATE NAME</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label asp-for="Delegates[index].FullName">Delegate's name <span class="required">*</span></label>
+                            <input asp-for="Delegates[index].FullName" autocomplete="name" />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Delegates[index].Designation">Designation <span class="required">*</span></label>
+                            <input asp-for="Delegates[index].Designation" />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Delegates[index].OccupancyType">Occupancy type <span class="required">*</span></label>
+                            <select asp-for="Delegates[index].OccupancyType">
+                                <option value="">Select</option>
+                                <option value="Corporate Delegate">Corporate Delegate</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Delegates[index].Mobile">Mobile No. <span class="required">*</span></label>
+                            <input asp-for="Delegates[index].Mobile" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Delegates[index].Email">E-mail ID <span class="required">*</span></label>
+                            <input asp-for="Delegates[index].Email" type="email" autocomplete="email" />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Delegates[index].Gender">Gender</label>
+                            <select asp-for="Delegates[index].Gender">
+                                <option value="">Select</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                            </select>
+                        </div>
+                        <div class="field field-full">
+                            <label asp-for="Delegates[index].Address">Address <span class="required">*</span></label>
+                            <textarea asp-for="Delegates[index].Address" rows="2"></textarea>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Delegates[index].State">State <span class="required">*</span></label>
+                            <input asp-for="Delegates[index].State" />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Delegates[index].City">City <span class="required">*</span></label>
+                            <input asp-for="Delegates[index].City" />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Delegates[index].PinCode">PIN Code <span class="required">*</span></label>
+                            <input asp-for="Delegates[index].PinCode" inputmode="numeric" />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Delegates[index].OrganisationName">Organisation <span class="required">*</span></label>
+                            <input asp-for="Delegates[index].OrganisationName" />
+                        </div>
+                        <div class="field">
+                            <label asp-for="Delegates[index].SignatoryName">Signatory <span class="required">*</span></label>
+                            <input asp-for="Delegates[index].SignatoryName" />
+                        </div>
+                        <div class="field field-full">
+                            <label asp-for="Delegates[index].OrganisationAddress">Organisation address <span class="required">*</span></label>
+                            <textarea asp-for="Delegates[index].OrganisationAddress" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <label class="check">
+                        <input asp-for="Delegates[index].AgreeTerms" />
+                        <span>I confirm the delegate details are correct and accept the registration terms.</span>
+                    </label>
+                </div>
+            }
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" type="submit">Save registration &amp; delegates</button>
+            <a class="btn btn-secondary" asp-page="/Register/MyRegistrations">My registrations &amp; payment</a>
+        </div>
+    </form>
+</section>
+
+<section class="member-section-card">
+    <div class="section-head">
+        <p class="eyebrow">Your registration</p>
+        <h2>Saved member registrations</h2>
+    </div>
+    @if (Model.SavedMemberRegistrations.Count == 0)
+    {
+        <div class="notice" role="status">No member registration saved yet.</div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Membership ID</th><th>Registration no.</th><th>Payment</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var item in Model.SavedMemberRegistrations)
+                    {
+                        <tr>
+                            <td><strong>@item.MembershipId</strong><br /><span class="hint">@item.FullName</span></td>
+                            <td>@item.Id</td>
+                            <td><span class="status status-@item.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@item.PaymentStatus</span></td>
+                            <td><a asp-page="/Register/Payment" asp-route-id="@item.Id">Pay / view</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<section class="member-section-card">
+    <div class="section-head">
+        <p class="eyebrow">Sponsored delegates</p>
+        <h2>Saved delegates</h2>
+        <p>@Model.SavedDelegates.Count of @Model.Limit delegates added.</p>
+    </div>
+    @if (Model.SavedDelegates.Count == 0)
+    {
+        <div class="notice" role="status">No delegates added yet.</div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Membership ID</th><th>Delegate</th><th>Registration no.</th><th>Payment</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var item in Model.SavedDelegates)
+                    {
+                        <tr>
+                            <td><strong>@item.MembershipId</strong><br /><span class="hint">@item.FullName</span></td>
+                            <td>@item.Email</td>
+                            <td>@item.Id</td>
+                            <td><span class="status status-@item.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@item.PaymentStatus</span></td>
+                            <td><a asp-page="/Register/Payment" asp-route-id="@item.Id">Pay / view</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<script>
+    (function () {
+        var rows = Array.prototype.slice.call(document.querySelectorAll('[data-member-delegate-row]'));
+        var addButton = document.querySelector('[data-member-delegate-add]');
+        function sync() {
+            rows.forEach(function (row) {
+                var disabled = row.classList.contains('is-hidden');
+                row.querySelectorAll('input, select, textarea').forEach(function (field) {
+                    field.disabled = disabled;
+                });
+            });
+            if (addButton) {
+                var visible = rows.filter(function (row) { return !row.classList.contains('is-hidden'); }).length;
+                addButton.disabled = visible >= rows.length;
+            }
+        }
+        if (addButton) {
+            addButton.addEventListener('click', function () {
+                var next = rows.find(function (row) { return row.classList.contains('is-hidden'); });
+                if (!next) return;
+                next.classList.remove('is-hidden');
+                sync();
+                next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        }
+        sync();
+    })();
+</script>

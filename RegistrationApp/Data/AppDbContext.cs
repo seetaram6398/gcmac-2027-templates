@@ -33,6 +33,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         {
             entity.HasKey(r => r.Id);
             entity.Property(r => r.Id).HasMaxLength(64);
+            entity.Property(r => r.MembershipId).HasMaxLength(128);
+            entity.HasIndex(r => r.MembershipId);
             entity.Property(r => r.AccountEmail).HasMaxLength(320).IsRequired();
             entity.Property(r => r.SponsorMemberNo).HasMaxLength(32);
             entity.Property(r => r.BaseFee).HasPrecision(18, 2);

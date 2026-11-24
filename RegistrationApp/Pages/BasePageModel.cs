@@ -14,19 +14,21 @@ public abstract class BasePageModel : PageModel
     protected IActionResult? SignedOut(string returnUrl)
     {
         if (IsSignedIn) return null;
-        var page = "/Account/EmailLogin";
+        var type = "delegate";
         if (returnUrl.Contains("CmaPractice", StringComparison.OrdinalIgnoreCase) ||
             returnUrl.Contains("AddDelegate", StringComparison.OrdinalIgnoreCase) ||
             returnUrl.Contains("VerifyMember", StringComparison.OrdinalIgnoreCase) ||
             returnUrl.Contains("/Member/", StringComparison.OrdinalIgnoreCase))
-            page = "/Account/Login";
+            type = "member";
         else if (returnUrl.Contains("CorporateOthers", StringComparison.OrdinalIgnoreCase))
-            page = "/Account/CorporateLogin";
+            type = "corporate";
         else if (returnUrl.Contains("category=Student", StringComparison.OrdinalIgnoreCase))
-            page = "/Account/StudentLogin";
+            type = "student";
         else if (returnUrl.Contains("category=Foreign", StringComparison.OrdinalIgnoreCase))
-            page = "/Account/ForeignLogin";
-        return RedirectToPage(page, new { returnUrl });
+            type = "foreign";
+        else if (returnUrl.Contains("/Admin/", StringComparison.OrdinalIgnoreCase))
+            type = "admin";
+        return RedirectToPage("/Account/SignIn", new { type, returnUrl });
     }
 
     protected bool CanView(RegistrationRecord record) =>

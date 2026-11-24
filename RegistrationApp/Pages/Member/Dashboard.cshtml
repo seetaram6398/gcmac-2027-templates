@@ -54,20 +54,12 @@
     </div>
 
     <div class="member-action-grid">
-        <a class="member-action" asp-page="/Register/Form" asp-route-category="CmaPractice">
-            <span><strong>Register for the event</strong><small>Complete your member delegate registration.</small></span>
-            <span class="member-action-arrow" aria-hidden="true">&rarr;</span>
-        </a>
-        <a class="member-action" asp-page="/Register/AddDelegate">
-            <span><strong>Add a delegate</strong><small>Sponsor another delegate under your membership.</small></span>
+        <a class="member-action" asp-page="/Member/Registration">
+            <span><strong>Registration &amp; delegates</strong><small>Register yourself and add delegates in one form.</small></span>
             <span class="member-action-arrow" aria-hidden="true">&rarr;</span>
         </a>
         <a class="member-action" asp-page="/Register/MyRegistrations">
             <span><strong>My registrations &amp; payment</strong><small>Review registrations and complete payments.</small></span>
-            <span class="member-action-arrow" aria-hidden="true">&rarr;</span>
-        </a>
-        <a class="member-action" asp-page="/Register/Category">
-            <span><strong>Other categories</strong><small>Explore corporate, student, foreign and spouse options.</small></span>
             <span class="member-action-arrow" aria-hidden="true">&rarr;</span>
         </a>
     </div>
@@ -80,17 +72,18 @@
         </div>
         @if (Model.Delegates.Count == 0)
         {
-            <div class="notice" role="status">No delegates added yet. <a asp-page="/Register/AddDelegate">Add your first delegate</a>.</div>
+            <div class="notice" role="status">No delegates added yet. <a asp-page="/Member/Registration">Add your first delegate</a>.</div>
         }
         else
         {
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th>Registration</th><th>Delegate</th><th>Category</th><th>Payment</th><th></th></tr></thead>
+                    <thead><tr><th>Membership ID</th><th>Registration</th><th>Delegate</th><th>Category</th><th>Payment</th><th></th></tr></thead>
                     <tbody>
                         @foreach (var item in Model.Delegates)
                         {
                             <tr>
+                                <td><strong>@item.MembershipId</strong></td>
                                 <td>@item.Id</td>
                                 <td>@item.FullName<br /><span class="hint">@item.Email</span></td>
                                 <td>@DashboardModel.CategoryName(item.Category)</td>
@@ -111,17 +104,18 @@
         </div>
         @if (Model.MyRegistrations.Count == 0)
         {
-            <div class="notice" role="status">You have not made any registration yet. <a asp-page="/Register/Form" asp-route-category="CmaPractice">Register now</a>.</div>
+            <div class="notice" role="status">You have not made any registration yet. <a asp-page="/Member/Registration">Register now</a>.</div>
         }
         else
         {
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th>Registration</th><th>Category</th><th>Amount</th><th>Payment</th><th></th></tr></thead>
+                    <thead><tr><th>Membership ID</th><th>Registration</th><th>Category</th><th>Amount</th><th>Payment</th><th></th></tr></thead>
                     <tbody>
                         @foreach (var item in Model.MyRegistrations)
                         {
                             <tr>
+                                <td><strong>@item.MembershipId</strong></td>
                                 <td>@item.Id</td>
                                 <td>@DashboardModel.CategoryName(item.Category)</td>
                                 <td>@item.TotalAmount</td>

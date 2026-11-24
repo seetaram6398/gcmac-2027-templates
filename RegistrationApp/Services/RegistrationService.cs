@@ -37,6 +37,9 @@ public sealed class RegistrationService(
         var fee = fees.Calculate(input.Category);
         record.Category = input.Category;
         record.FullName = input.FullName.Trim();
+        record.MembershipId = MembershipIds.Build(
+            input.SponsorMemberNo ?? (input.Category == DelegateCategory.CmaPractice ? input.MembershipNo : null),
+            record.FullName);
         record.Email = input.Email.Trim();
         record.Mobile = input.Mobile.Trim();
         record.Gender = input.Gender;

@@ -1,0 +1,209 @@
+@page
+@model SignInModel
+@{
+    ViewData["Title"] = "Sign in";
+}
+
+<section class="auth-page">
+    <div class="auth-wrap">
+        <aside class="auth-showcase">
+            <div class="auth-showcase-top">
+                <img src="~/img/gcmac-2027-logo-square.png" alt="GCMAC 2027 emblem" />
+                <span class="auth-badge">Delegate gateway</span>
+            </div>
+            <div class="auth-showcase-copy">
+                <p class="auth-kicker">Welcome to GCMAC 2027</p>
+                <h1>Your convention,<br />one simple sign in.</h1>
+                <p>Pick your category below to manage registrations, payments and your delegate workspace.</p>
+            </div>
+            <ul class="auth-highlights">
+                <li><span>01</span> Secure, role-based access</li>
+                <li><span>02</span> Track and complete registrations</li>
+                <li><span>03</span> Instant member dashboard</li>
+            </ul>
+            <div class="auth-event">
+                <span>12 — 14 February 2027</span>
+                <strong>The Ashok, New Delhi</strong>
+            </div>
+        </aside>
+
+        <div class="auth-card">
+            <div class="auth-card-head">
+                <p class="auth-kicker">Sign in</p>
+                <h2>Choose your category</h2>
+                <p>Use the credentials for your GCMAC 2027 account.</p>
+            </div>
+
+            <div class="auth-tabs" role="tablist" aria-label="Sign in category">
+                <button type="button" class="auth-tab" data-auth-target="delegate" role="tab" aria-selected="false">Delegate</button>
+                <button type="button" class="auth-tab" data-auth-target="member" role="tab" aria-selected="false">CMA Member</button>
+                <button type="button" class="auth-tab" data-auth-target="corporate" role="tab" aria-selected="false">Corporate</button>
+                <button type="button" class="auth-tab" data-auth-target="student" role="tab" aria-selected="false">Student</button>
+                <button type="button" class="auth-tab" data-auth-target="foreign" role="tab" aria-selected="false">Foreign</button>
+                <button type="button" class="auth-tab" data-auth-target="admin" role="tab" aria-selected="false">Admin</button>
+            </div>
+
+            <div class="auth-panes" data-auth-active="@Model.ActiveType">
+                <section class="auth-pane" data-auth-pane="delegate" role="tabpanel">
+                    <form method="post" class="auth-form">
+                        <input type="hidden" name="UserType" value="delegate" />
+                        <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+                        <div asp-validation-summary="All" class="validation"></div>
+                        <label class="auth-field">
+                            <span>Email address</span>
+                            <input name="Email" type="email" autocomplete="email" placeholder="you@example.com" required />
+                        </label>
+                        <label class="auth-field">
+                            <span>Password</span>
+                            <input name="Password" type="password" autocomplete="current-password" placeholder="Enter your password" required />
+                        </label>
+                        <button class="btn btn-primary auth-submit" type="submit">Sign in <span aria-hidden="true">→</span></button>
+                        <div class="auth-links">
+                            <a asp-page="/Account/Register" asp-route-returnUrl="@Model.ReturnUrl">Create an account</a>
+                            <a asp-page="/Register/Track">Track registration</a>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="auth-pane" data-auth-pane="member" role="tabpanel">
+                    <form method="post" class="auth-form">
+                        <input type="hidden" name="UserType" value="member" />
+                        <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+                        <div asp-validation-summary="All" class="validation"></div>
+                        <label class="auth-field">
+                            <span>ICMAI membership number</span>
+                            <input name="MembershipNo" inputmode="numeric" pattern="[0-9]+" autocomplete="username" placeholder="Membership number" required />
+                        </label>
+                        @if (Model.ShowOtpWindow)
+                        {
+                            <label class="auth-field">
+                                <span>One-time password</span>
+                                <input name="Otp" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code" placeholder="6-digit OTP" value="@Model.Otp" required />
+                            </label>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.Notice))
+                        {
+                            <p class="auth-note" role="status">@Model.Notice</p>
+                        }
+                        <button class="btn btn-primary auth-submit" type="submit" name="SendOtp" value="@(Model.ShowOtpWindow ? "false" : "true")">
+                            @(Model.ShowOtpWindow ? "Verify & sign in" : "Send OTP") <span aria-hidden="true">→</span>
+                        </button>
+                        @if (Model.ShowOtpWindow)
+                        {
+                            <button class="btn btn-secondary auth-resend" type="submit" name="SendOtp" value="true">Resend OTP</button>
+                        }
+                        <div class="auth-links">
+                            <a asp-page="/Account/MemberSignup">New member? Sign up</a>
+                        </div>
+                        <p class="auth-hint">Demo OTP: <strong>@Model.DemoSecretValue</strong></p>
+                    </form>
+                </section>
+
+                <section class="auth-pane" data-auth-pane="corporate" role="tabpanel">
+                    <form method="post" class="auth-form">
+                        <input type="hidden" name="UserType" value="corporate" />
+                        <div asp-validation-summary="All" class="validation"></div>
+                        <label class="auth-field">
+                            <span>Signatory's email address</span>
+                            <input name="Email" type="email" autocomplete="email" placeholder="you@organisation.com" required />
+                        </label>
+                        <div class="auth-field-row">
+                            <label class="auth-field">
+                                <span>Password</span>
+                                <input name="Password" type="password" autocomplete="current-password" placeholder="Password" required />
+                            </label>
+                            <label class="auth-field">
+                                <span>Category</span>
+                                <select name="Category" required>
+                                    <option value="">Select</option>
+                                    <option value="Corporate Delegate">Corporate Delegate</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </label>
+                        </div>
+                        <label class="auth-field">
+                            <span>Security code</span>
+                            <input name="SecurityCode" autocomplete="off" placeholder="Security code" required />
+                        </label>
+                        <button class="btn btn-primary auth-submit" type="submit">Sign in <span aria-hidden="true">→</span></button>
+                        <div class="auth-links">
+                            <a asp-page="/Register/Category">Back to categories</a>
+                        </div>
+                        <p class="auth-hint">Demo password and security code: <strong>@Model.DemoSecretValue</strong></p>
+                    </form>
+                </section>
+
+                <section class="auth-pane" data-auth-pane="student" role="tabpanel">
+                    <form method="post" class="auth-form">
+                        <input type="hidden" name="UserType" value="student" />
+                        <div asp-validation-summary="All" class="validation"></div>
+                        <div class="auth-field-row">
+                            <label class="auth-field">
+                                <span>Registration number</span>
+                                <input name="RegistrationNo" maxlength="12" placeholder="Student registration no." required />
+                            </label>
+                            <label class="auth-field">
+                                <span>Date of birth</span>
+                                <input name="DateOfBirth" inputmode="numeric" placeholder="DD/MM/YYYY" pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}" required />
+                            </label>
+                        </div>
+                        <label class="auth-field">
+                            <span>Security code</span>
+                            <input name="SecurityCode" autocomplete="off" placeholder="Security code" required />
+                        </label>
+                        <button class="btn btn-primary auth-submit" type="submit">Sign in <span aria-hidden="true">→</span></button>
+                        <div class="auth-links">
+                            <a asp-page="/Register/Category">Back to categories</a>
+                        </div>
+                        <p class="auth-hint">Demo security code: <strong>@Model.DemoSecretValue</strong></p>
+                    </form>
+                </section>
+
+                <section class="auth-pane" data-auth-pane="foreign" role="tabpanel">
+                    <form method="post" class="auth-form">
+                        <input type="hidden" name="UserType" value="foreign" />
+                        <div asp-validation-summary="All" class="validation"></div>
+                        <label class="auth-field">
+                            <span>Email address</span>
+                            <input name="Email" type="email" autocomplete="email" placeholder="you@example.com" required />
+                        </label>
+                        <label class="auth-field">
+                            <span>Password</span>
+                            <input name="Password" type="password" autocomplete="current-password" placeholder="Password" required />
+                        </label>
+                        <label class="auth-field">
+                            <span>Security code</span>
+                            <input name="SecurityCode" autocomplete="off" placeholder="Security code" required />
+                        </label>
+                        <button class="btn btn-primary auth-submit" type="submit">Sign in <span aria-hidden="true">→</span></button>
+                        <div class="auth-links">
+                            <a asp-page="/Register/Category">Back to categories</a>
+                        </div>
+                        <p class="auth-hint">Demo password and security code: <strong>@Model.DemoSecretValue</strong></p>
+                    </form>
+                </section>
+
+                <section class="auth-pane" data-auth-pane="admin" role="tabpanel">
+                    <form method="post" class="auth-form">
+                        <input type="hidden" name="UserType" value="admin" />
+                        <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+                        <div asp-validation-summary="All" class="validation"></div>
+                        <p class="auth-note">Restricted access for the GCMAC 2027 administration desk.</p>
+                        <label class="auth-field">
+                            <span>Admin email</span>
+                            <input name="Email" type="email" autocomplete="username" placeholder="Admin email" required />
+                        </label>
+                        <label class="auth-field">
+                            <span>Admin password</span>
+                            <input name="Password" type="password" autocomplete="current-password" placeholder="Admin password" required />
+                        </label>
+                        <button class="btn btn-primary auth-submit" type="submit">Admin sign in <span aria-hidden="true">→</span></button>
+                        <div class="auth-links">
+                            <a asp-page="/Register/Track">Track a registration</a>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
+</section>
