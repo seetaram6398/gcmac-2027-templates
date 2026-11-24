@@ -36,9 +36,12 @@
 *::before,
 *::after { box-sizing: border-box; }
 
-html { font-size: 17px; scroll-behavior: smooth; scroll-padding-top: 130px; }
+html { min-height: 100%; font-size: 17px; scroll-behavior: smooth; scroll-padding-top: 130px; }
 
 body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
   margin: 0;
   font-family: var(--body);
   font-weight: 500;
@@ -128,6 +131,7 @@ img { display: block; max-width: 100%; }
 @keyframes spin-slow {
   to { transform: rotate(360deg); }
 }
+main { flex: 1 0 auto; }
 main,
 .footer { position: relative; z-index: 2; }
 
@@ -1334,6 +1338,7 @@ main,
 
 /* ---------- Footer ---------- */
 .footer {
+  margin-top: auto;
   padding: 56px 0 24px;
   border-top: 4px solid var(--secondary);
   background: var(--primary);

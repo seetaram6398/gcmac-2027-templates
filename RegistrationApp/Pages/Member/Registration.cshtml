@@ -31,6 +31,12 @@
             }
         </div>
     }
+    @if (!string.IsNullOrWhiteSpace(Model.BatchPaymentIds))
+    {
+        <div class="member-pay-now">
+            <a class="btn btn-primary" asp-page="/Member/Payment" asp-route-ids="@Model.BatchPaymentIds">Pay now — view @Model.BatchPaymentIds.Split(',').Length QR code(s)</a>
+        </div>
+    }
 
     <form method="post">
         <div asp-validation-summary="All" class="validation"></div>
@@ -74,6 +80,16 @@
                 <label asp-for="Input.Country">Country</label>
                 <input asp-for="Input.Country" />
             </div>
+            <div class="field">
+                <label asp-for="Input.OccupancyType">Occupancy type <span class="required">*</span></label>
+                <select asp-for="Input.OccupancyType" required>
+                    <option value="">Select</option>
+                    <option value="Main">Main</option>
+                    <option value="Spouse">Spouse</option>
+                    <option value="Companion">Companion</option>
+                    <option value="Other member">Other member</option>
+                </select>
+            </div>
         </div>
         <label class="check">
             <input asp-for="Input.AgreeTerms" required />
@@ -109,8 +125,10 @@
                             <label asp-for="Delegates[index].OccupancyType">Occupancy type <span class="required">*</span></label>
                             <select asp-for="Delegates[index].OccupancyType">
                                 <option value="">Select</option>
-                                <option value="Corporate Delegate">Corporate Delegate</option>
-                                <option value="Others">Others</option>
+                                <option value="Main">Main</option>
+                                <option value="Spouse">Spouse</option>
+                                <option value="Companion">Companion</option>
+                                <option value="Other member">Other member</option>
                             </select>
                         </div>
                         <div class="field">

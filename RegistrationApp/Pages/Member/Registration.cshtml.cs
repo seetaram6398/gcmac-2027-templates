@@ -16,6 +16,7 @@ public sealed class RegistrationModel(
     public IReadOnlyList<RegistrationRecord> SavedDelegates { get; private set; } = [];
     public IReadOnlyList<RegistrationRecord> SavedMemberRegistrations { get; private set; } = [];
     public IReadOnlyList<string> SavedMembershipIds { get; private set; } = [];
+    public string BatchPaymentIds { get; private set; } = "";
     public int Limit => registrations.MaxDelegatesPerMember;
     public bool CanAddDelegate => SavedDelegates.Count < Limit;
     public string? Notice { get; private set; }
@@ -34,6 +35,8 @@ public sealed class RegistrationModel(
 
         ApplyServerValues(Input, DelegateCategory.CmaPractice);
         foreach (var error in Input.Validate()) ModelState.AddModelError("", error);
+        if (string.IsNullOrWhiteSpace(Input.OccupancyType))
+            ModelState.AddModelError("", "Occupancy type is required.");
 
         var submitted = Delegates.Where(HasData).ToList();
         var available = Math.Max(0, Limit - SavedDelegates.Count);
@@ -64,6 +67,7 @@ public sealed class RegistrationModel(
 
         SavedMembershipIds = created.Select(r =>
             $"{r.FullName} — {r.MembershipId}").ToList();
+        BatchPaymentIds = string.Join(",", created.Select(r => r.Id));
         Notice = $"Saved {created.Count} registration(s) under membership {MemberNo}. Membership IDs are generated from your membership number and each delegate's name.";
 
         Input = NewMemberInput();
@@ -141,6 +145,7 @@ public sealed class RegistrationModel(
         MemberVerified = true,
         RequireMemberVerification = false,
         FullName = Member?.Name ?? "",
+        OccupancyType = "Main",
         Email = Member?.Email ?? "",
         ConfirmEmail = Member?.Email ?? "",
         Mobile = Member?.Mobile ?? "",

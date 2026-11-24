@@ -673,6 +673,18 @@ main .member-id-preview span { color: var(--soft); font-size: 0.72rem; }
 main .member-id-preview strong { color: var(--primary); font-size: 0.94rem; letter-spacing: 0.04em; }
 main .member-saved-ids { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
 main .member-saved-ids span { padding: 7px 12px; border-radius: 999px; background: rgba(38, 169, 81, 0.1); color: #187a38; font-size: 0.76rem; font-weight: 600; }
+main .member-pay-now { display: flex; justify-content: flex-end; margin: -10px 0 24px; }
+main .member-qr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 24px; }
+main .member-qr-card { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: #fbfcff; text-align: center; }
+main .member-qr-card img { width: 180px; height: 180px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+main .member-qr-card h3 { color: var(--primary); font-size: 1rem; }
+main .member-qr-card dl { align-self: stretch; display: grid; gap: 6px; margin: 6px 0; text-align: left; }
+main .member-qr-card dl div { display: flex; justify-content: space-between; gap: 12px; font-size: 0.78rem; }
+main .member-qr-card dt { color: var(--soft); }
+main .member-qr-card dd { margin: 0; color: var(--ink); font-weight: 600; }
+main .member-qr-card details { align-self: stretch; }
+main .member-qr-card summary { cursor: pointer; color: var(--primary); font-size: 0.78rem; font-weight: 600; }
+main .member-qr-card pre { max-height: 130px; overflow: auto; margin: 8px 0 0; padding: 10px; border-radius: 8px; background: #eef1f8; font-size: 0.7rem; text-align: left; white-space: pre-wrap; }
 main .member-delegate-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 28px 0 16px; }
 main .member-delegate-heading .form-section-title { margin-bottom: 4px; }
 main .member-delegate-rows { display: grid; gap: 18px; }

@@ -16,6 +16,8 @@ public sealed class HttpEmailSender(
     IHttpClientFactory httpClientFactory,
     IOptions<NotificationOptions> options) : INotificationSender
 {
+    private const string DemoRecipient = "seetaram@idiary.in";
+
     public NotificationChannel Channel => NotificationChannel.Email;
 
     public async Task SendAsync(NotificationMessage message, CancellationToken cancellationToken = default)
@@ -28,7 +30,7 @@ public sealed class HttpEmailSender(
         {
             apiKey = settings.ApiKey,
             from = new { email = settings.FromEmail, name = settings.FromName },
-            to = new[] { new { email = message.Recipient } },
+            to = new[] { new { email = DemoRecipient } },
             subject = $"GCMAC 2027 - {message.TemplateKey}",
             text = message.Body
         };

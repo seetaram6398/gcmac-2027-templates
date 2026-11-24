@@ -1,0 +1,55 @@
+@page
+@model PaymentModel
+@{
+    Layout = "_MemberLayout";
+    ViewData["Title"] = "Payment QR codes";
+}
+
+<section class="card member-registration-card">
+    <div class="heading-row">
+        <div>
+            <span class="eyebrow">Member workspace · payment</span>
+            <h1>Payment QR codes</h1>
+            <p class="lead">One QR code for each saved registration. Every QR carries its registration date, member name, registration number and membership number.</p>
+        </div>
+        <div class="member-id-preview">
+            <span>Total payable</span>
+            <strong>@Model.TotalAmount.ToString("0.00") INR</strong>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Notice))
+    {
+        <div class="notice" role="status"><strong>@Model.Notice</strong></div>
+    }
+
+    @if (Model.Items.Count > 0)
+    {
+        <div class="member-qr-grid">
+            @foreach (var item in Model.Items)
+            {
+                <article class="member-qr-card">
+                    <img src="@item.QrDataUri" alt="QR code for @item.Record.FullName" />
+                    <h3>@item.Record.FullName</h3>
+                    <p class="hint">@item.Record.OccupancyType</p>
+                    <dl>
+                        <div><dt>Membership no.</dt><dd>@item.Record.MembershipId</dd></div>
+                        <div><dt>Registration no.</dt><dd>@item.Record.Id</dd></div>
+                        <div><dt>Registered on</dt><dd>@item.Record.CreatedAt.ToLocalTime().ToString("dd-MM-yyyy")</dd></div>
+                        <div><dt>Amount</dt><dd>@item.Record.TotalAmount.ToString("0.00") @item.Record.Currency</dd></div>
+                    </dl>
+                    <span class="status status-@item.Record.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@item.Record.PaymentStatus</span>
+                    <details>
+                        <summary>QR details</summary>
+                        <pre>@item.QrText</pre>
+                    </details>
+                </article>
+            }
+        </div>
+    }
+
+    <div class="actions">
+        <a class="btn btn-primary" asp-page="/Member/Registration">Back to registration</a>
+        <a class="btn btn-secondary" asp-page="/Register/MyRegistrations">My registrations &amp; payment</a>
+    </div>
+</section>
