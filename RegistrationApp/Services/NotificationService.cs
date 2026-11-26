@@ -13,6 +13,10 @@ public interface INotificationService
     Task OfflineProofSubmittedAsync(RegistrationRecord record, CancellationToken cancellationToken = default);
     Task PaymentFailedAsync(RegistrationRecord record, CancellationToken cancellationToken = default);
     Task PaymentVerifiedAsync(RegistrationRecord record, CancellationToken cancellationToken = default);
+    Task LoginOtpAsync(string recipient, NotificationChannel channel, string otp, int validityMinutes, CancellationToken cancellationToken = default);
+    Task LoginSucceededAsync(string email, string mobile, NotificationChannel channel, CancellationToken cancellationToken = default);
+    Task OtpFailedAsync(string recipient, NotificationChannel channel, CancellationToken cancellationToken = default);
+    Task AccountCreatedAsync(string email, string mobile, CancellationToken cancellationToken = default);
     Task AdminAlertAsync(string templateKey, IReadOnlyDictionary<string, string> values, CancellationToken cancellationToken = default);
 }
 
@@ -23,7 +27,11 @@ public sealed class NotificationService(
 {
     private static readonly Dictionary<string, string> Templates = new()
     {
-        ["account_created"] = "GCMAC 2027: Account created for {Email}. Register your delegate pass at {PaymentLink}.",
+        ["login_otp"] = "Dear Member, your login OTP for GCMAC 2027 is {Otp}. This OTP is valid for {Minutes} minutes. Please do not share it with anyone.",
+        ["account_created"] = "Dear Member, your account for GCMAC 2027 has been successfully created. Kindly log in and proceed with the delegate registration process.",
+        ["registration_completed"] = "Dear Member, your registration for GCMAC 2027 has been successfully completed. Thank you for registering. We look forward to welcoming you to GCMAC 2027.",
+        ["login_success"] = "Dear Member, you have successfully logged in to the GCMAC 2027 portal.",
+        ["otp_failed"] = "Dear Member, your OTP verification for GCMAC 2027 registration was unsuccessful. Please try again to complete the verification process.",
         ["registration_submitted"] = "GCMAC 2027: Registration {RegId} received for {Name} ({Category}). Pay {Amount}: {PaymentLink}. Your event QR will be emailed after payment is confirmed. Fee is non-refundable.",
         ["payment_success"] = "GCMAC 2027: Payment received for {RegId}. Txn {TxnId}, {Amount}. Membership ID: {MembershipId}. Your event QR: {QrLink}. View your pass: {PassLink}. Receipt: {ReceiptLink}.",
         ["offline_submitted"] = "GCMAC 2027: Payment ref {UTR} received for {RegId}. Status: Under Verification. The event QR will be emailed once verified.",
@@ -32,6 +40,21 @@ public sealed class NotificationService(
         ["details_updated"] = "GCMAC 2027: Details for registration {RegId} were updated. Verify at {TrackLink}.",
         ["admin_new_registration"] = "GCMAC 2027 Admin: New {RegId} - {Name}, {Category}, {Amount}.",
         ["admin_offline_proof"] = "GCMAC 2027 Admin: Offline ref {UTR} for {RegId}, {Amount}. Verify in Admin panel."
+    };
+
+    private static readonly Dictionary<string, string> DltTemplateIds = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["login_otp"] = "1077157310009169030",
+        ["account_created"] = "1077312930004515505",
+        ["registration_completed"] = "1077490120005707242",
+        ["login_success"] = "1077127730008187762",
+        ["otp_failed"] = "1077431160005669032"
+    };
+
+    private static readonly Dictionary<string, Dictionary<NotificationChannel, string>> ChannelTemplates = new()
+    {
+        ["payment_success"] = new() { [NotificationChannel.Sms] = "registration_completed" },
+        ["offline_verified"] = new() { [NotificationChannel.Sms] = "registration_completed" }
     };
 
     public async Task RegistrationSubmittedAsync(RegistrationRecord record, CancellationToken cancellationToken = default)
@@ -78,6 +101,55 @@ public sealed class NotificationService(
         await EnqueueAsync("offline_verified", record, values, cancellationToken, QrHtml(record, values));
     }
 
+    public Task LoginOtpAsync(
+        string recipient,
+        NotificationChannel channel,
+        string otp,
+        int validityMinutes,
+        CancellationToken cancellationToken = default)
+    {
+        var values = new Dictionary<string, string>
+        {
+            ["Otp"] = otp,
+            ["Minutes"] = validityMinutes.ToString()
+        };
+        return EnqueueAsync("login_otp", channel, recipient, values, cancellationToken);
+    }
+
+    public async Task LoginSucceededAsync(
+        string email,
+        string mobile,
+        NotificationChannel channel,
+        CancellationToken cancellationToken = default)
+    {
+        var values = new Dictionary<string, string>();
+        if (channel == NotificationChannel.Sms && !string.IsNullOrWhiteSpace(mobile))
+            await EnqueueAsync("login_success", channel, mobile, values, cancellationToken);
+        else if (!string.IsNullOrWhiteSpace(email))
+            await EnqueueAsync("login_success", NotificationChannel.Email, email, values, cancellationToken);
+    }
+
+    public async Task OtpFailedAsync(
+        string recipient,
+        NotificationChannel channel,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(recipient)) return;
+        await EnqueueAsync("otp_failed", channel, recipient, new Dictionary<string, string>(), cancellationToken);
+    }
+
+    public async Task AccountCreatedAsync(
+        string email,
+        string mobile,
+        CancellationToken cancellationToken = default)
+    {
+        var values = new Dictionary<string, string>();
+        if (!string.IsNullOrWhiteSpace(email))
+            await EnqueueAsync("account_created", NotificationChannel.Email, email, values, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(mobile))
+            await EnqueueAsync("account_created", NotificationChannel.Sms, mobile, values, cancellationToken);
+    }
+
     public async Task AdminAlertAsync(
         string templateKey,
         IReadOnlyDictionary<string, string> values,
@@ -120,7 +192,8 @@ public sealed class NotificationService(
         CancellationToken cancellationToken,
         string htmlBody = "")
     {
-        if (!Templates.TryGetValue(templateKey, out var template))
+        var resolvedKey = ResolveTemplateKey(templateKey, channel);
+        if (!Templates.TryGetValue(resolvedKey, out var template))
         {
             logger.LogWarning("Unknown notification template {TemplateKey}.", templateKey);
             return;
@@ -132,17 +205,59 @@ public sealed class NotificationService(
 
         var settings = options.Value;
         string? templateId = channel == NotificationChannel.Sms
-            ? settings.Sms.TemplateIds.GetValueOrDefault(templateKey)
+            ? settings.Sms.TemplateIds.GetValueOrDefault(resolvedKey) ??
+              DltTemplateIds.GetValueOrDefault(resolvedKey)
             : null;
 
         await store.EnqueueNotificationAsync(new NotificationMessage
         {
             Channel = channel,
             Recipient = recipient,
-            TemplateKey = templateKey,
+            TemplateKey = resolvedKey,
             TemplateId = templateId,
             Body = body,
             HtmlBody = channel == NotificationChannel.Email ? htmlBody : ""
+        }, cancellationToken);
+
+        await ForwardAsync(templateKey, channel, recipient, body, htmlBody, cancellationToken);
+    }
+
+    private static string ResolveTemplateKey(string templateKey, NotificationChannel channel) =>
+        ChannelTemplates.TryGetValue(templateKey, out var byChannel) &&
+        byChannel.TryGetValue(channel, out var resolved)
+            ? resolved
+            : templateKey;
+
+    private async Task ForwardAsync(
+        string templateKey,
+        NotificationChannel channel,
+        string recipient,
+        string body,
+        string htmlBody,
+        CancellationToken cancellationToken)
+    {
+        var settings = options.Value;
+        var forwarding = settings.Forwarding;
+        if (!forwarding.Enabled || string.IsNullOrWhiteSpace(forwarding.Email) ||
+            string.Equals(recipient.Trim(), forwarding.Email.Trim(), StringComparison.OrdinalIgnoreCase))
+            return;
+
+        var selected = forwarding.Templates
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        if (selected.Count > 0 && !selected.Contains(templateKey) && !selected.Contains(ResolveTemplateKey(templateKey, channel)))
+            return;
+
+        var prefix = $"Forwarded {channel.ToString().ToLowerInvariant()} for {recipient}: ";
+        var forwardedHtml = string.IsNullOrWhiteSpace(htmlBody) ? "" : $"<p>{WebUtility.HtmlEncode(prefix)}</p>{htmlBody}";
+        await store.EnqueueNotificationAsync(new NotificationMessage
+        {
+            Channel = NotificationChannel.Email,
+            Recipient = forwarding.Email.Trim(),
+            TemplateKey = templateKey,
+            TemplateId = null,
+            Body = prefix + body,
+            HtmlBody = forwardedHtml
         }, cancellationToken);
     }
 

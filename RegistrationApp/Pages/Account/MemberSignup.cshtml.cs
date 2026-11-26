@@ -11,6 +11,7 @@ public sealed class MemberSignupModel(
     IMemberAccountService memberAccounts,
     RegistrationStore store,
     RegistrationService registrationService,
+    INotificationService notifications,
     PasswordHasher hasher,
     IConfiguration configuration) : BasePageModel
 {
@@ -46,6 +47,10 @@ public sealed class MemberSignupModel(
     public string? Notice { get; private set; }
     public string? SuccessMessage { get; private set; }
     public string DemoSecretValue => DemoSecret();
+
+    public int OtpValidityMinutes => int.TryParse(configuration["MemberLogin:OtpValidityMinutes"], out var minutes) && minutes > 0
+        ? minutes
+        : 10;
     public FeeBreakdown DelegateFee => registrationService.Fees.Calculate(DelegateCategory.CmaPractice);
     public string DelegateCategoryName => registrationService.Fees.NameOf(DelegateCategory.CmaPractice);
 
@@ -93,7 +98,7 @@ public sealed class MemberSignupModel(
         return Page();
     }
 
-    public IActionResult OnPostSendEmailOtp()
+    public async Task<IActionResult> OnPostSendEmailOtpAsync()
     {
         if (!DetailsLoaded || string.IsNullOrWhiteSpace(MemberEmail))
         {
@@ -105,11 +110,12 @@ public sealed class MemberSignupModel(
         EmailOtpSent = true;
         EmailOtpWindowOpen = true;
         MobileOtpWindowOpen = false;
-        Notice = "Enter the OTP in the email verification window to continue.";
+        await notifications.LoginOtpAsync(MemberEmail!, NotificationChannel.Email, DemoSecret(), OtpValidityMinutes);
+        Notice = $"OTP sent to your email id. Demo OTP: {DemoSecretValue}";
         return Page();
     }
 
-    public IActionResult OnPostSendMobileOtp()
+    public async Task<IActionResult> OnPostSendMobileOtpAsync()
     {
         if (!DetailsLoaded || string.IsNullOrWhiteSpace(MemberMobile))
         {
@@ -121,11 +127,12 @@ public sealed class MemberSignupModel(
         MobileOtpSent = true;
         MobileOtpWindowOpen = true;
         EmailOtpWindowOpen = false;
-        Notice = "Enter the OTP in the mobile verification window to continue.";
+        await notifications.LoginOtpAsync(MemberMobile!, NotificationChannel.Sms, DemoSecret(), OtpValidityMinutes);
+        Notice = $"OTP sent to your mobile number. Demo OTP: {DemoSecretValue}";
         return Page();
     }
 
-    public IActionResult OnPostValidateEmailOtp()
+    public async Task<IActionResult> OnPostValidateEmailOtpAsync()
     {
         if (!DetailsLoaded || !EmailOtpSent)
         {
@@ -135,6 +142,7 @@ public sealed class MemberSignupModel(
 
         if (EmailOtp != DemoSecret())
         {
+            await notifications.OtpFailedAsync(MemberEmail ?? "", NotificationChannel.Email);
             ModelState.AddModelError("", "Invalid email OTP.");
             EmailOtpWindowOpen = true;
             return Page();
@@ -147,7 +155,7 @@ public sealed class MemberSignupModel(
         return Page();
     }
 
-    public IActionResult OnPostValidateMobileOtp()
+    public async Task<IActionResult> OnPostValidateMobileOtpAsync()
     {
         if (!DetailsLoaded || !MobileOtpSent)
         {
@@ -157,6 +165,7 @@ public sealed class MemberSignupModel(
 
         if (MobileOtp != DemoSecret())
         {
+            await notifications.OtpFailedAsync(MemberMobile ?? "", NotificationChannel.Sms);
             ModelState.AddModelError("", "Invalid mobile OTP.");
             MobileOtpWindowOpen = true;
             return Page();
@@ -280,6 +289,7 @@ public sealed class MemberSignupModel(
             PasswordSalt = salt,
             CreatedAt = DateTimeOffset.UtcNow
         });
+        await notifications.AccountCreatedAsync(member.Email!, member.Mobile);
     }
 
     private void PrefillDelegate(MemberAccount member)

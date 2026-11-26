@@ -41,6 +41,14 @@ public sealed class NotificationOptions
     public int MaxDelegatesPerMember { get; set; } = 5;
     public int MaxAdditionalDelegatesPerMember { get; set; } = 5;
     public string PublicBaseUrl { get; set; } = "";
+    public NotificationForwardingOptions Forwarding { get; set; } = new();
+}
+
+public sealed class NotificationForwardingOptions
+{
+    public bool Enabled { get; set; }
+    public string Email { get; set; } = "";
+    public string Templates { get; set; } = "";
 }
 
 public sealed class EmailOptions

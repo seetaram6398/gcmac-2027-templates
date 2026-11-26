@@ -1,4 +1,5 @@
 using Gcmac.Registration.Data;
+using Gcmac.Registration.Models;
 using Gcmac.Registration.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ public sealed class SignInModel(
     RegistrationStore store,
     PasswordHasher hasher,
     IMemberAccountService memberAccounts,
+    INotificationService notifications,
     IConfiguration configuration) : BasePageModel
 {
     [BindProperty] public string UserType { get; set; } = "delegate";
@@ -17,6 +19,7 @@ public sealed class SignInModel(
     [BindProperty] public string Password { get; set; } = "";
     [BindProperty] public string MembershipNo { get; set; } = "";
     [BindProperty] public string Otp { get; set; } = "";
+    [BindProperty] public string OtpChannel { get; set; } = "email";
     [BindProperty] public string RegistrationNo { get; set; } = "";
     [BindProperty] public string DateOfBirth { get; set; } = "";
     [BindProperty] public string Category { get; set; } = "";
@@ -28,9 +31,18 @@ public sealed class SignInModel(
     public string? Notice { get; private set; }
     public string DemoSecretValue => configuration["MemberLogin:DemoSecret"] ?? "123456";
 
+    public int OtpValidityMinutes => int.TryParse(configuration["MemberLogin:OtpValidityMinutes"], out var minutes) && minutes > 0
+        ? minutes
+        : 10;
+
     public void OnGet()
     {
         ViewData["Title"] = "Sign in";
+        if (HttpContext.Request.Path.StartsWithSegments("/registration", StringComparison.OrdinalIgnoreCase))
+        {
+            Type ??= "delegate";
+            ReturnUrl ??= "/Register/MyRegistrations";
+        }
         ActiveType = Normalize(Type);
     }
 
@@ -83,28 +95,52 @@ public sealed class SignInModel(
     {
         ShowOtpWindow = true;
         MembershipNo = MembershipNo.Trim();
+        OtpChannel = NormalizeOtpChannel(OtpChannel);
         if (MembershipNo.Length == 0)
         {
             ModelState.AddModelError("", "Membership number is required.");
             return Page();
         }
 
+        var stored = await memberAccounts.GetStoredAsync(MembershipNo);
+        if (stored is null)
+        {
+            ModelState.AddModelError("", "Please sign up and verify your member details before logging in.");
+            return Page();
+        }
+
+        var channel = OtpChannel == "sms" ? NotificationChannel.Sms : NotificationChannel.Email;
+        var recipient = channel == NotificationChannel.Sms ? stored.Mobile : stored.Email;
+        if (string.IsNullOrWhiteSpace(recipient) || !IsChannelVerified(stored, channel))
+        {
+            ModelState.AddModelError("", OtpChannel == "sms"
+                ? "Please verify your mobile number before logging in via SMS."
+                : "Please verify your email id before logging in via email.");
+            return Page();
+        }
+
         if (SendOtp)
         {
-            Notice = $"OTP sent to your registered email and mobile number. Demo OTP: {DemoSecretValue}";
+            var otp = DemoSecretValue;
+            HttpContext.Session.SetString(SessionKeys.LoginOtp, otp);
+            HttpContext.Session.SetString(SessionKeys.LoginOtpMembershipNo, MembershipNo);
+            HttpContext.Session.SetString(SessionKeys.LoginOtpChannel, OtpChannel);
+            await notifications.LoginOtpAsync(recipient, channel, otp, OtpValidityMinutes);
+            Notice = $"OTP sent via {(OtpChannel == "sms" ? "SMS" : "email")} to {Mask(recipient)}. Demo OTP: {otp}";
             return Page();
         }
 
-        if ((Otp ?? "").Trim() != DemoSecretValue)
+        var expectedOtp = HttpContext.Session.GetString(SessionKeys.LoginOtp);
+        var otpMembershipNo = HttpContext.Session.GetString(SessionKeys.LoginOtpMembershipNo);
+        if (string.IsNullOrWhiteSpace(expectedOtp) || !string.Equals(otpMembershipNo, MembershipNo, StringComparison.Ordinal))
         {
+            expectedOtp = DemoSecretValue;
+        }
+
+        if ((Otp ?? "").Trim() != expectedOtp)
+        {
+            await notifications.OtpFailedAsync(recipient, channel);
             ModelState.AddModelError("", "Invalid OTP.");
-            return Page();
-        }
-
-        var stored = await memberAccounts.GetStoredAsync(MembershipNo);
-        if (stored is null || !stored.EmailVerified || !stored.MobileVerified)
-        {
-            ModelState.AddModelError("", "Please sign up and verify your email and mobile number before logging in.");
             return Page();
         }
 
@@ -116,14 +152,28 @@ public sealed class SignInModel(
         }
 
         var member = load.Member;
+        HttpContext.Session.Remove(SessionKeys.LoginOtp);
+        HttpContext.Session.Remove(SessionKeys.LoginOtpMembershipNo);
+        HttpContext.Session.Remove(SessionKeys.LoginOtpChannel);
         HttpContext.Session.SetString(SessionKeys.Email,
             string.IsNullOrWhiteSpace(member.Email) ? member.MemberNo : member.Email);
         HttpContext.Session.Remove(SessionKeys.IsAdmin);
         HttpContext.Session.SetString(SessionKeys.VerifiedMemberNo, member.MemberNo);
         HttpContext.Session.SetString(SessionKeys.VerifiedMemberName, member.Name);
         HttpContext.Session.SetString(SessionKeys.VerifiedMemberDetails, System.Text.Json.JsonSerializer.Serialize(member));
+        await notifications.LoginSucceededAsync(stored.Email, stored.Mobile, channel);
         return Redirect(LocalReturnUrl("/Member/Dashboard"));
     }
+
+    private static bool IsChannelVerified(MemberAccount member, NotificationChannel channel) =>
+        channel == NotificationChannel.Sms ? member.MobileVerified : member.EmailVerified;
+
+    private static string NormalizeOtpChannel(string? value) =>
+        string.Equals(value, "sms", StringComparison.OrdinalIgnoreCase) ? "sms" : "email";
+
+    private static string Mask(string recipient) => recipient.Length <= 4
+        ? recipient
+        : $"{recipient[..2]}••••{recipient[^2..]}";
 
     private IActionResult Corporate()
     {

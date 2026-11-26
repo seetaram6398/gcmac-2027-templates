@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages()
+    .AddRazorPagesOptions(options => options.Conventions.AddPageRoute("/Account/SignIn", "registration"));
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromHours(2);

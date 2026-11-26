@@ -74,6 +74,13 @@
                             <span>ICMAI membership number</span>
                             <input name="MembershipNo" value="@Model.MembershipNo" inputmode="numeric" pattern="[0-9]+" autocomplete="username" placeholder="Membership number" required />
                         </label>
+                        <label class="auth-field">
+                            <span>Send OTP via</span>
+                            <select name="OtpChannel">
+                                <option value="email" selected="@(Model.OtpChannel != "sms")">Email</option>
+                                <option value="sms" selected="@(Model.OtpChannel == "sms")">SMS</option>
+                            </select>
+                        </label>
                         @if (Model.ShowOtpWindow)
                         {
                             <label class="auth-field">
@@ -95,7 +102,7 @@
                         <div class="auth-links">
                             <a asp-page="/Account/SignIn" asp-route-type="member" asp-route-returnUrl="/Member/Registration">New member? Sign in / sign up here</a>
                         </div>
-                        <p class="auth-hint">Demo OTP: <strong>@Model.DemoSecretValue</strong></p>
+                        <p class="auth-hint">Demo OTP: <strong>@Model.DemoSecretValue</strong> — same OTP works for email or SMS.</p>
                     </form>
                 </section>
 

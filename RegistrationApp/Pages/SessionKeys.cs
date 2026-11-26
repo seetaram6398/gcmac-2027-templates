@@ -9,4 +9,7 @@ public static class SessionKeys
     public const string VerifiedMemberNo = "VerifiedMemberNo";
     public const string VerifiedMemberName = "VerifiedMemberName";
     public const string VerifiedMemberDetails = "VerifiedMemberDetails";
+    public const string LoginOtp = "LoginOtp";
+    public const string LoginOtpMembershipNo = "LoginOtpMembershipNo";
+    public const string LoginOtpChannel = "LoginOtpChannel";
 }
