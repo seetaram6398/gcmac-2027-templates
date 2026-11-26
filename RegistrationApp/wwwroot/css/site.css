@@ -685,6 +685,15 @@ main .member-qr-card dd { margin: 0; color: var(--ink); font-weight: 600; }
 main .member-qr-card details { align-self: stretch; }
 main .member-qr-card summary { cursor: pointer; color: var(--primary); font-size: 0.78rem; font-weight: 600; }
 main .member-qr-card pre { max-height: 130px; overflow: auto; margin: 8px 0 0; padding: 10px; border-radius: 8px; background: #eef1f8; font-size: 0.7rem; text-align: left; white-space: pre-wrap; }
+main .pass-card details { margin-top: 18px; }
+main .pass-card summary { cursor: pointer; color: var(--primary); font-size: 0.78rem; font-weight: 600; }
+main .pass-card pre { max-height: 160px; overflow: auto; margin: 10px 0 0; padding: 12px; border-radius: 10px; background: #eef1f8; font-size: 0.72rem; white-space: pre-wrap; }
+main .pass-body { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 28px; align-items: start; }
+main .pass-qr { width: 220px; height: 220px; padding: 10px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+main .pass-list { margin: 14px 0 0; padding-left: 20px; color: var(--muted); font-size: 0.84rem; }
+main .pass-list li { margin-bottom: 8px; }
+main .pass-list a { margin-left: 8px; color: var(--primary); font-weight: 600; }
+@media (max-width: 700px) { main .pass-body { grid-template-columns: 1fr; } }
 main .member-delegate-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 28px 0 16px; }
 main .member-delegate-heading .form-section-title { margin-bottom: 4px; }
 main .member-delegate-rows { display: grid; gap: 18px; }
@@ -769,3 +778,41 @@ main .auth-hint strong { color: var(--primary); }
   main .card { border: 0; box-shadow: none; padding: 0; margin: 0; }
   body { background: #fff; }
 }
+
+main .member-registration-compact { font-size: 0.82rem; }
+main .member-registration-compact .card { padding: 18px 22px; }
+main .member-registration-compact .member-section-card { padding: 16px 20px; margin-bottom: 18px; }
+main .member-registration-compact h1 { font-size: 1.45rem; }
+main .member-registration-compact h2 { font-size: 1rem; }
+main .member-registration-compact h3,
+main .member-registration-compact .form-section-title { font-size: 0.84rem; margin-bottom: 10px; }
+main .member-registration-compact .lead,
+main .member-registration-compact p { font-size: 0.76rem; }
+main .member-registration-compact .eyebrow { font-size: 0.62rem; }
+main .member-registration-compact .notice { padding: 9px 12px; margin-bottom: 12px; font-size: 0.74rem; }
+main .member-registration-compact .validation { padding: 10px 12px; margin-bottom: 12px; font-size: 0.74rem; }
+main .member-registration-compact .form-grid { gap: 8px 12px; }
+main .member-registration-compact .field > label { display: block; margin-bottom: 4px; font-size: 0.68rem; font-weight: 600; }
+main .member-registration-compact .field input,
+main .member-registration-compact .field select,
+main .member-registration-compact .field textarea { padding: 7px 10px; border-radius: 8px; font-size: 0.76rem; }
+main .member-registration-compact .field textarea { min-height: 52px; }
+main .member-registration-compact .check,
+main .member-registration-compact .radio-row { font-size: 0.72rem; }
+main .member-registration-compact .btn { padding: 7px 12px; font-size: 0.74rem; }
+main .member-registration-compact .member-id-preview { padding: 8px 12px; }
+main .member-registration-compact .member-id-preview span { font-size: 0.62rem; }
+main .member-registration-compact .member-id-preview strong { font-size: 0.76rem; }
+main .member-registration-compact .member-delegate-heading { margin: 18px 0 10px; }
+main .member-registration-compact .member-delegate-rows { gap: 12px; }
+main .member-registration-compact .member-delegate-row { padding: 12px 14px; border-radius: 12px; }
+main .member-registration-compact .member-delegate-row-head { margin-bottom: 10px; padding-bottom: 8px; }
+main .member-registration-compact .member-delegate-row-head strong { font-size: 0.76rem; }
+main .member-registration-compact table { font-size: 0.74rem; }
+main .member-registration-compact th { padding: 7px 8px; font-size: 0.62rem; }
+main .member-registration-compact td { padding: 7px 8px; }
+
+main .member-registration-compact #add-after-payment { display: none; }
+main .member-registration-compact #add-after-payment:target { display: block; }
+
+main .member-registration-compact #add-after-payment.after-payment-only { display: block; }

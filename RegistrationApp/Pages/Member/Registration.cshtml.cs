@@ -10,15 +10,19 @@ public sealed class RegistrationModel(
 {
     [BindProperty] public RegistrationInput Input { get; set; } = new();
     [BindProperty] public List<RegistrationInput> Delegates { get; set; } = [];
+    [BindProperty] public RegistrationInput Additional { get; set; } = new();
 
     public string MemberNo { get; private set; } = "";
     public MemberAccount? Member { get; private set; }
     public IReadOnlyList<RegistrationRecord> SavedDelegates { get; private set; } = [];
     public IReadOnlyList<RegistrationRecord> SavedMemberRegistrations { get; private set; } = [];
+    public IReadOnlyList<RegistrationRecord> AdditionalDelegates { get; private set; } = [];
     public IReadOnlyList<string> SavedMembershipIds { get; private set; } = [];
-    public string BatchPaymentIds { get; private set; } = "";
     public int Limit => registrations.MaxDelegatesPerMember;
+    public int AdditionalLimit => registrations.MaxAdditionalDelegatesPerMember;
     public bool CanAddDelegate => SavedDelegates.Count < Limit;
+    public bool CanAddAdditional => AdditionalDelegates.Count < AdditionalLimit;
+    public bool HasPaidRegistration { get; private set; }
     public string? Notice { get; private set; }
 
     public async Task<IActionResult> OnGetAsync()
@@ -67,13 +71,46 @@ public sealed class RegistrationModel(
 
         SavedMembershipIds = created.Select(r =>
             $"{r.FullName} — {r.MembershipId}").ToList();
-        BatchPaymentIds = string.Join(",", created.Select(r => r.Id));
-        Notice = $"Saved {created.Count} registration(s) under membership {MemberNo}. Membership IDs are generated from your membership number and each delegate's name.";
+        var result = await registrations.CreateCombinedPaymentBatchAsync(
+            accountEmail, MemberNo, PaymentBatchKinds.Registration);
 
-        Input = NewMemberInput();
-        Delegates = [];
-        await ReloadAsync();
-        return Page();
+        return RedirectToPage("/Register/BatchPayment", new { id = result.BatchId });
+    }
+
+    public async Task<IActionResult> OnPostAddAdditionalAsync()
+    {
+        var denied = await GuardAsync();
+        if (denied is not null) return denied;
+
+        if (!HasPaidRegistration)
+        {
+            ModelState.AddModelError("", "Complete payment for your registration before adding a delegate.");
+            await ReloadAsync();
+            return Page();
+        }
+
+        if (AdditionalDelegates.Count >= AdditionalLimit)
+        {
+            ModelState.AddModelError("", $"The post-payment delegate limit ({AdditionalLimit}) for this membership has been reached.");
+            await ReloadAsync();
+            return Page();
+        }
+
+        ApplyServerValues(Additional, DelegateCategory.CorporateOthers);
+        foreach (var error in Additional.Validate())
+            ModelState.AddModelError("", $"Additional delegate: {error}");
+        if (!ModelState.IsValid)
+        {
+            await ReloadAsync();
+            return Page();
+        }
+
+        var accountEmail = CurrentEmail ?? MemberNo;
+        await registrations.CreateAsync(Additional, accountEmail, isAdditionalDelegate: true);
+        var result = await registrations.CreateCombinedPaymentBatchAsync(
+            accountEmail, MemberNo, PaymentBatchKinds.Registration);
+
+        return RedirectToPage("/Register/BatchPayment", new { id = result.BatchId });
     }
 
     private async Task<IActionResult?> GuardAsync()
@@ -104,13 +141,16 @@ public sealed class RegistrationModel(
 
         var sponsored = await registrations.GetBySponsorMemberNoAsync(MemberNo);
         SavedDelegates = sponsored.Where(r =>
-            r.Category != DelegateCategory.CmaPractice ||
-            !string.Equals(r.MembershipNo, MemberNo, StringComparison.OrdinalIgnoreCase)).ToList();
+            !r.IsAdditionalDelegate &&
+            (r.Category != DelegateCategory.CmaPractice ||
+             !string.Equals(r.MembershipNo, MemberNo, StringComparison.OrdinalIgnoreCase))).ToList();
+        AdditionalDelegates = sponsored.Where(r => r.IsAdditionalDelegate).ToList();
 
         var mine = await registrations.GetForEmailAsync(CurrentEmail ?? "");
         SavedMemberRegistrations = mine.Where(r =>
             r.Category == DelegateCategory.CmaPractice &&
             string.Equals(r.MembershipNo, MemberNo, StringComparison.OrdinalIgnoreCase)).ToList();
+        HasPaidRegistration = mine.Concat(sponsored).Any(r => r.PaymentStatus == PaymentStates.Paid);
     }
 
     private void ApplyServerValues(RegistrationInput input, DelegateCategory category)

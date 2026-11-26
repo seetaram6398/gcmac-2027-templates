@@ -1,0 +1,45 @@
+@page
+@model PassModel
+@{
+    Layout = "_MemberLayout";
+    ViewData["Title"] = "Event pass";
+}
+
+<section class="card pass-card">
+    <div class="heading-row">
+        <div>
+            <span class="eyebrow">GCMAC 2027 · event entry pass</span>
+            <h1>@Model.Registration.FullName</h1>
+            <p class="lead">Show this QR at the event entry. The same pass was emailed to the delegate after payment confirmation.</p>
+        </div>
+        <div class="member-id-preview">
+            <span>Payment status</span>
+            <strong>@Model.Registration.PaymentStatus</strong>
+        </div>
+    </div>
+
+    <div class="pass-body">
+        <img class="pass-qr" src="@Model.QrDataUri" alt="Event entry QR for @Model.Registration.FullName" />
+        <dl class="details">
+            <dt>Registration no.</dt><dd><strong>@Model.Registration.Id</strong></dd>
+            <dt>Membership ID</dt><dd><strong>@Model.Registration.MembershipId</strong></dd>
+            <dt>Category</dt><dd>@Model.CategoryName</dd>
+            <dt>Registered on</dt><dd>@Model.Registration.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</dd>
+            <dt>Venue</dt><dd>The Ashok, New Delhi · 12–14 February 2027</dd>
+        </dl>
+    </div>
+
+    <details>
+        <summary>QR data</summary>
+        <pre>@Model.QrText</pre>
+    </details>
+
+    <p class="note">Keep this link private. Each member and delegate has a separate pass with a unique registration number.</p>
+    <div class="actions">
+        @if (Model.Paid)
+        {
+            <a class="btn btn-primary" asp-page="Receipt" asp-route-id="@Model.Registration.Id">Receipt</a>
+        }
+        <a class="btn btn-secondary" asp-page="MyRegistrations">My registrations</a>
+    </div>
+</section>

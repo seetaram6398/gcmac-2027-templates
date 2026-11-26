@@ -1,0 +1,62 @@
+@page
+@model BatchPaymentModel
+@{
+    Layout = "_MemberLayout";
+    ViewData["Title"] = Model.IsAdditional ? "Pay for added delegates" : "Pay registration & delegates";
+    var symbol = Model.Currency == "USD" ? "$" : "\u20B9";
+}
+
+<section class="card">
+    <div class="heading-row">
+        <div>
+            <span class="eyebrow">Single payment · @Model.BatchId</span>
+            <h1>@(Model.IsAdditional ? "Pay for the delegates added after payment" : "Pay your registration and delegates together")</h1>
+            <p class="lead">@Model.Items.Count registration(s) are included in this one payment. Every person gets a separate event QR by email once the payment is confirmed.</p>
+        </div>
+        <div class="member-id-preview">
+            <span>Total payable</span>
+            <strong>@symbol @Model.TotalAmount.ToString("N2")</strong>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Registration no.</th><th>Name</th><th>Membership ID</th><th>Category</th><th>Amount</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td><strong>@item.Id</strong></td>
+                        <td>@item.FullName<br /><span class="hint">@item.Email</span></td>
+                        <td>@item.MembershipId</td>
+                        <td>@item.Category</td>
+                        <td>@symbol @item.TotalAmount.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="validation">@Model.ErrorMessage</div>
+    }
+
+    <form method="post">
+        <fieldset>
+            <legend>Payment method</legend>
+            @foreach (var method in Model.Methods)
+            {
+                <label class="radio"><input type="radio" asp-for="Method" value="@method" /> @method</label>
+            }
+            <label>Payment reference / UTR (required for Offline) <input asp-for="Reference" /></label>
+        </fieldset>
+        <p class="note">Card, UPI and NetBanking are processed by the configured payment gateway. Offline payments are verified by the secretariat before QR codes are emailed.</p>
+        <div class="actions">
+            <button class="btn btn-primary" type="submit">Pay @symbol @Model.TotalAmount.ToString("N2")</button>
+            <a class="btn btn-secondary" asp-page="MyRegistrations">My registrations</a>
+        </div>
+    </form>
+</section>

@@ -30,7 +30,7 @@
                 <ul>
                     <li>Enter your ICMAI membership number and click <b>Send OTP</b>.</li>
                     <li>Current demo OTP: <strong>@Model.DemoSecretValue</strong>.</li>
-                    <li>If you have not created your account yet, <a asp-page="/Account/MemberSignup">sign up here</a> first.</li>
+                    <li>If you have not created your account yet, <a asp-page="/Account/SignIn" asp-route-type="member" asp-route-returnUrl="/Member/Registration">sign up here</a> first.</li>
                 </ul>
             </div>
 
@@ -53,7 +53,7 @@
                 <div class="form-actions">
                     <button class="btn btn-secondary" type="submit" asp-page-handler="SendOtp">Send OTP</button>
                     <a class="btn btn-secondary" asp-page="/Register/Category">Back to categories</a>
-                    <a class="btn btn-secondary" asp-page="/Account/MemberSignup">Member signup</a>
+                    <a class="btn btn-secondary" asp-page="/Account/SignIn" asp-route-type="member" asp-route-returnUrl="/Member/Registration">Member signup</a>
                 </div>
 
                 @if (Model.ShowOtpWindow)

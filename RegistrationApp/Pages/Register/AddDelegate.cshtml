@@ -129,6 +129,7 @@
                 </form>
 
                 <h2>Added delegates</h2>
+                <p><a class="btn btn-primary" asp-page="MyRegistrations">Pay all registrations together</a></p>
                 @if (Model.Delegates.Count == 0)
                 {
                     <div class="notice" role="status">No delegates added yet.</div>
@@ -169,7 +170,17 @@
                                         <td>@Model.Text(item.State)</td>
                                         <td>@Model.Text(item.City)</td>
                                         <td>@Model.Text(item.PinCode)</td>
-                                        <td><span class="status status-@item.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@item.PaymentStatus</span><br /><a asp-page="Payment" asp-route-id="@item.Id">Pay / view</a></td>
+                                        <td>
+                                            <span class="status status-@item.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@item.PaymentStatus</span><br />
+                                            @if (item.PaymentStatus == PaymentStates.Paid)
+                                            {
+                                                <a asp-page="Pass" asp-route-id="@item.Id">Event QR</a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-page="MyRegistrations">Pay together</a>
+                                            }
+                                        </td>
                                         <td class="row-actions"><a asp-page-handler="Edit" asp-route-id="@item.Id">Edit</a></td>
                                     </tr>
                                 }

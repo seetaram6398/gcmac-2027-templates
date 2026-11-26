@@ -37,6 +37,7 @@ public sealed class SignInModel(
     public async Task<IActionResult> OnPostAsync()
     {
         ActiveType = Normalize(UserType);
+        ModelState.Clear();
         if (ActiveType == "member") return await MemberAsync();
         if (ActiveType == "corporate") return Corporate();
         if (ActiveType == "student") return Student();

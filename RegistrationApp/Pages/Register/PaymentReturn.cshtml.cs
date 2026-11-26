@@ -1,3 +1,4 @@
+using Gcmac.Registration.Models;
 using Gcmac.Registration.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,8 @@ public sealed class PaymentReturnModel(RegistrationService service) : BasePageMo
     public bool Success { get; private set; }
     public string Message { get; private set; } = "";
     public string? RegistrationId { get; private set; }
+    public string? BatchId { get; private set; }
+    public IReadOnlyList<RegistrationRecord> BatchRegistrations { get; private set; } = [];
 
     public async Task<IActionResult> OnGetAsync()
     {
@@ -22,6 +25,9 @@ public sealed class PaymentReturnModel(RegistrationService service) : BasePageMo
         Success = completion.Result.Success;
         Message = completion.Result.ErrorMessage ?? "Payment completed successfully.";
         RegistrationId = completion.RegistrationId;
+        BatchId = completion.BatchId;
+        if (!string.IsNullOrWhiteSpace(BatchId))
+            BatchRegistrations = await service.GetPaymentBatchAsync(BatchId);
         return Page();
     }
 }

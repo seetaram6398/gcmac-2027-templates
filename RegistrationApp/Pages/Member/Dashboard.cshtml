@@ -62,6 +62,10 @@
             <span><strong>My registrations &amp; payment</strong><small>Review registrations and complete payments.</small></span>
             <span class="member-action-arrow" aria-hidden="true">&rarr;</span>
         </a>
+        <a class="member-action" href="/Member/Registration?mode=after-payment#add-after-payment">
+            <span><strong>Add delegate after payment</strong><small>Add another delegate and pay together.</small></span>
+            <span class="member-action-arrow" aria-hidden="true">&rarr;</span>
+        </a>
     </div>
 
     <section class="member-section-card">
@@ -88,7 +92,16 @@
                                 <td>@item.FullName<br /><span class="hint">@item.Email</span></td>
                                 <td>@DashboardModel.CategoryName(item.Category)</td>
                                 <td><span class="status status-@item.PaymentStatus.ToLowerInvariant()">@item.PaymentStatus</span></td>
-                                <td><a asp-page="/Register/Payment" asp-route-id="@item.Id">Pay / view</a></td>
+                                <td>
+                                    @if (item.PaymentStatus == PaymentStates.Paid)
+                                    {
+                                        <a asp-page="/Register/Pass" asp-route-id="@item.Id">Event QR</a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-page="/Register/MyRegistrations">Pay all together</a>
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -120,7 +133,16 @@
                                 <td>@DashboardModel.CategoryName(item.Category)</td>
                                 <td>@item.TotalAmount</td>
                                 <td><span class="status status-@item.PaymentStatus.ToLowerInvariant()">@item.PaymentStatus</span></td>
-                                <td><a asp-page="/Register/Payment" asp-route-id="@item.Id">Pay / view</a></td>
+                                <td>
+                                    @if (item.PaymentStatus == PaymentStates.Paid)
+                                    {
+                                        <a asp-page="/Register/Pass" asp-route-id="@item.Id">Event QR</a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-page="/Register/MyRegistrations">Pay all together</a>
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>

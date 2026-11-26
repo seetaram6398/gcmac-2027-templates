@@ -22,6 +22,9 @@ public sealed class PaymentModel(RegistrationService service) : BasePageModel
         if (record is null || (!IsAdmin && !string.Equals(record.AccountEmail, CurrentEmail, StringComparison.OrdinalIgnoreCase)))
             return RedirectToPage("MyRegistrations");
 
+        if (!string.IsNullOrWhiteSpace(record.PaymentBatchId))
+            return RedirectToPage("BatchPayment", new { id = record.PaymentBatchId });
+
         if (record.PaymentStatus == PaymentStates.Paid)
             return RedirectToPage("Confirmation", new { id = record.Id });
 
@@ -37,6 +40,9 @@ public sealed class PaymentModel(RegistrationService service) : BasePageModel
         var record = await service.FindAsync(id);
         if (record is null || (!IsAdmin && !string.Equals(record.AccountEmail, CurrentEmail, StringComparison.OrdinalIgnoreCase)))
             return RedirectToPage("MyRegistrations");
+
+        if (!string.IsNullOrWhiteSpace(record.PaymentBatchId))
+            return RedirectToPage("BatchPayment", new { id = record.PaymentBatchId });
 
         if (record.PaymentStatus == PaymentStates.Paid)
             return RedirectToPage("Confirmation", new { id = record.Id });
@@ -54,7 +60,7 @@ public sealed class PaymentModel(RegistrationService service) : BasePageModel
             return RedirectToPage("Confirmation", new { id = record.Id });
         }
 
-        var returnUrl = $"{Request.Scheme}://{Request.Host}/Register/PaymentReturn";
+        var returnUrl = BuildAbsoluteUrl("/Register/PaymentReturn");
         var result = await service.InitiatePaymentAsync(record, Method, returnUrl);
         if (!result.Success || string.IsNullOrWhiteSpace(result.RedirectUrl))
         {

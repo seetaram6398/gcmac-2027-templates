@@ -1,7 +1,10 @@
 using System.Text.Json;
 using Gcmac.Registration.Models;
+using Gcmac.Registration.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Gcmac.Registration.Pages;
 
@@ -48,4 +51,16 @@ public abstract class BasePageModel : PageModel
         HttpContext.Session.SetString(SessionKeys.Draft, JsonSerializer.Serialize(draft));
 
     protected void ClearDraft() => HttpContext.Session.Remove(SessionKeys.Draft);
+
+    protected string BuildAbsoluteUrl(string path)
+    {
+        var settings = HttpContext.RequestServices.GetRequiredService<IOptions<PaymentOptions>>().Value;
+        var publicBase = settings.PublicBaseUrl?.TrimEnd('/');
+        if (!string.IsNullOrWhiteSpace(publicBase) &&
+            Uri.TryCreate(publicBase, UriKind.Absolute, out var baseUri) &&
+            (baseUri.Scheme == Uri.UriSchemeHttps || baseUri.Scheme == Uri.UriSchemeHttp))
+            return $"{publicBase}{path}";
+
+        return $"{Request.Scheme}://{Request.Host}{path}";
+    }
 }

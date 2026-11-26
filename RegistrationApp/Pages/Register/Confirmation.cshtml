@@ -34,8 +34,17 @@
         <p class="note">A confirmation has been recorded. Please retain the receipt for your records.</p>
     }
 
+    @if (Model.Registration.PaymentStatus == Models.PaymentStates.Paid)
+    {
+        <p class="note">Your event QR with the unique registration and membership IDs has been emailed to @Model.Registration.Email.</p>
+    }
+
     <div class="actions">
-        <a class="btn btn-primary" asp-page="Receipt" asp-route-id="@Model.Registration.Id">Download / print receipt</a>
+        @if (Model.Registration.PaymentStatus == Models.PaymentStates.Paid)
+        {
+            <a class="btn btn-primary" asp-page="Pass" asp-route-id="@Model.Registration.Id">View event QR</a>
+        }
+        <a class="btn btn-secondary" asp-page="Receipt" asp-route-id="@Model.Registration.Id">Download / print receipt</a>
         <a class="btn btn-secondary" asp-page="MyRegistrations">My registrations</a>
     </div>
 </section>

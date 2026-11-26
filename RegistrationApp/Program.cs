@@ -32,11 +32,26 @@ builder.Services.AddHttpClient<IMemberDirectory, MemberDirectory>(client =>
     client.Timeout = TimeSpan.FromSeconds(Math.Clamp(settings.TimeoutSeconds, 2, 60));
 });
 
-var paymentProvider = builder.Configuration[$"{PaymentOptions.SectionName}:Provider"] ?? "Demo";
-if (paymentProvider.Equals("PNB", StringComparison.OrdinalIgnoreCase))
+var paymentProvider = builder.Configuration[$"{PaymentOptions.SectionName}:Provider"] ?? "PNB";
+var usePnb = paymentProvider.Equals("PNB", StringComparison.OrdinalIgnoreCase);
+if (usePnb)
+{
+    var pnb = builder.Configuration.GetSection($"{PaymentOptions.SectionName}:Pnb").Get<PnbPaymentOptions>() ?? new();
+    if (string.IsNullOrWhiteSpace(pnb.RequestUrl) ||
+        string.IsNullOrWhiteSpace(pnb.VerifyUrl) ||
+        string.IsNullOrWhiteSpace(pnb.MerchantCode) ||
+        string.IsNullOrWhiteSpace(pnb.Key) ||
+        string.IsNullOrWhiteSpace(pnb.Iv))
+    {
+        Console.Error.WriteLine("PNB payment gateway is selected but not configured. Set Payment__Pnb__RequestUrl, Payment__Pnb__VerifyUrl, Payment__Pnb__MerchantCode, Payment__Pnb__Key and Payment__Pnb__Iv.");
+    }
+
     builder.Services.AddSingleton<IPaymentGateway, PnbPaymentGateway>();
+}
 else
+{
     builder.Services.AddSingleton<IPaymentGateway, DemoPaymentGateway>();
+}
 
 builder.Services.AddSingleton<RegistrationStore>();
 builder.Services.AddSingleton<FeeCatalog>();

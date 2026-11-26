@@ -2,9 +2,13 @@
 @model RegistrationModel
 @{
     Layout = "_MemberLayout";
-    ViewData["Title"] = "Registration & delegates";
+    var afterPaymentOnly = string.Equals(Request.Query["mode"], "after-payment", StringComparison.OrdinalIgnoreCase);
+    ViewData["Title"] = afterPaymentOnly ? "Add delegate after payment" : "Registration & delegates";
 }
 
+<div class="member-registration-compact">
+@if (!afterPaymentOnly)
+{
 <section class="card member-registration-card">
     <div class="heading-row">
         <div>
@@ -31,12 +35,7 @@
             }
         </div>
     }
-    @if (!string.IsNullOrWhiteSpace(Model.BatchPaymentIds))
-    {
-        <div class="member-pay-now">
-            <a class="btn btn-primary" asp-page="/Member/Payment" asp-route-ids="@Model.BatchPaymentIds">Pay now — view @Model.BatchPaymentIds.Split(',').Length QR code(s)</a>
-        </div>
-    }
+    <div class="notice" role="status">You and every delegate in this form are billed in one payment. After payment, a separate event QR with unique IDs is emailed to each person.</div>
 
     <form method="post">
         <div asp-validation-summary="All" class="validation"></div>
@@ -212,7 +211,16 @@
                             <td><strong>@item.MembershipId</strong><br /><span class="hint">@item.FullName</span></td>
                             <td>@item.Id</td>
                             <td><span class="status status-@item.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@item.PaymentStatus</span></td>
-                            <td><a asp-page="/Register/Payment" asp-route-id="@item.Id">Pay / view</a></td>
+                            <td>
+                                @if (item.PaymentStatus == PaymentStates.Paid)
+                                {
+                                    <a asp-page="/Register/Pass" asp-route-id="@item.Id">Event QR</a>
+                                }
+                                else
+                                {
+                                    <a asp-page="/Register/MyRegistrations">Pay all together</a>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -220,31 +228,120 @@
         </div>
     }
 </section>
+}
 
-<section class="member-section-card">
+<section class="member-section-card@(afterPaymentOnly ? " after-payment-only" : "")" id="add-after-payment">
     <div class="section-head">
-        <p class="eyebrow">Sponsored delegates</p>
-        <h2>Saved delegates</h2>
-        <p>@Model.SavedDelegates.Count of @Model.Limit delegates added.</p>
+        <p class="eyebrow">After payment</p>
+        <h2>@(afterPaymentOnly ? "Add delegate after payment" : "Add a delegate with a separate payment")</h2>
+        <p>Available once your registration payment is confirmed. @Model.AdditionalDelegates.Count of @Model.AdditionalLimit post-payment delegates added.</p>
     </div>
-    @if (Model.SavedDelegates.Count == 0)
+
+    @if (!Model.HasPaidRegistration)
     {
-        <div class="notice" role="status">No delegates added yet.</div>
+        <div class="notice" role="status">Complete your first payment to unlock this option.</div>
     }
     else
+    {
+        <form method="post" asp-page-handler="AddAdditional">
+            <div asp-validation-summary="All" class="validation"></div>
+            <div class="form-grid">
+                <div class="field">
+                    <label asp-for="Additional.FullName">Delegate's name <span class="required">*</span></label>
+                    <input asp-for="Additional.FullName" autocomplete="name" required />
+                </div>
+                <div class="field">
+                    <label asp-for="Additional.Designation">Designation <span class="required">*</span></label>
+                    <input asp-for="Additional.Designation" required />
+                </div>
+                <div class="field">
+                    <label asp-for="Additional.OccupancyType">Occupancy type <span class="required">*</span></label>
+                    <select asp-for="Additional.OccupancyType" required>
+                        <option value="">Select</option>
+                        <option value="Main">Main</option>
+                        <option value="Spouse">Spouse</option>
+                        <option value="Companion">Companion</option>
+                        <option value="Other member">Other member</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label asp-for="Additional.Mobile">Mobile No. <span class="required">*</span></label>
+                    <input asp-for="Additional.Mobile" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required />
+                </div>
+                <div class="field">
+                    <label asp-for="Additional.Email">E-mail ID <span class="required">*</span></label>
+                    <input asp-for="Additional.Email" type="email" autocomplete="email" required />
+                </div>
+                <div class="field">
+                    <label asp-for="Additional.Gender">Gender</label>
+                    <select asp-for="Additional.Gender">
+                        <option value="">Select</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                    </select>
+                </div>
+                <div class="field field-full">
+                    <label asp-for="Additional.Address">Address <span class="required">*</span></label>
+                    <textarea asp-for="Additional.Address" rows="2" required></textarea>
+                </div>
+                <div class="field">
+                    <label asp-for="Additional.State">State <span class="required">*</span></label>
+                    <input asp-for="Additional.State" required />
+                </div>
+                <div class="field">
+                    <label asp-for="Additional.City">City <span class="required">*</span></label>
+                    <input asp-for="Additional.City" required />
+                </div>
+                <div class="field">
+                    <label asp-for="Additional.PinCode">PIN Code <span class="required">*</span></label>
+                    <input asp-for="Additional.PinCode" inputmode="numeric" required />
+                </div>
+                <div class="field">
+                    <label asp-for="Additional.OrganisationName">Organisation <span class="required">*</span></label>
+                    <input asp-for="Additional.OrganisationName" required />
+                </div>
+                <div class="field">
+                    <label asp-for="Additional.SignatoryName">Signatory <span class="required">*</span></label>
+                    <input asp-for="Additional.SignatoryName" required />
+                </div>
+                <div class="field field-full">
+                    <label asp-for="Additional.OrganisationAddress">Organisation address <span class="required">*</span></label>
+                    <textarea asp-for="Additional.OrganisationAddress" rows="2" required></textarea>
+                </div>
+            </div>
+            <label class="check">
+                <input asp-for="Additional.AgreeTerms" required />
+                <span>I confirm the delegate details are correct and accept the registration terms.</span>
+            </label>
+            <div class="actions">
+                <button class="btn btn-primary" type="submit" @(Model.CanAddAdditional ? "" : "disabled")>Add delegate &amp; pay together</button>
+            </div>
+        </form>
+    }
+
+    @if (Model.AdditionalDelegates.Count > 0)
     {
         <div class="table-wrap">
             <table>
                 <thead><tr><th>Membership ID</th><th>Delegate</th><th>Registration no.</th><th>Payment</th><th></th></tr></thead>
                 <tbody>
-                    @foreach (var item in Model.SavedDelegates)
+                    @foreach (var item in Model.AdditionalDelegates)
                     {
                         <tr>
-                            <td><strong>@item.MembershipId</strong><br /><span class="hint">@item.FullName</span></td>
-                            <td>@item.Email</td>
+                            <td><strong>@item.MembershipId</strong></td>
+                            <td>@item.FullName<br /><span class="hint">@item.Email</span></td>
                             <td>@item.Id</td>
                             <td><span class="status status-@item.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@item.PaymentStatus</span></td>
-                            <td><a asp-page="/Register/Payment" asp-route-id="@item.Id">Pay / view</a></td>
+                            <td>
+                                @if (item.PaymentStatus == PaymentStates.Paid)
+                                {
+                                    <a asp-page="/Register/Pass" asp-route-id="@item.Id">Event QR</a>
+                                }
+                                else
+                                {
+                                    <a asp-page="/Register/MyRegistrations">Pay all together</a>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -252,6 +349,7 @@
         </div>
     }
 </section>
+</div>
 
 <script>
     (function () {

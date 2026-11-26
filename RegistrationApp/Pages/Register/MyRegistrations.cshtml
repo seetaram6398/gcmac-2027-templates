@@ -15,7 +15,7 @@
             <a class="btn btn-primary" asp-page="Category">New registration</a>
             @if (!string.IsNullOrWhiteSpace(HttpContext.Session.GetString(SessionKeys.VerifiedMemberNo)))
             {
-                <a class="btn btn-secondary" asp-page="AddDelegate">Add delegate</a>
+                <a class="btn btn-secondary" href="/Member/Registration?mode=after-payment#add-after-payment">Add delegate after payment</a>
             }
             else
             {
@@ -24,12 +24,69 @@
         </div>
     </div>
 
+    @if (Model.PendingRegistrations.Count > 0)
+    {
+        <div class="section-head">
+            <p class="eyebrow">One payment</p>
+            <h2>Pay all registrations together</h2>
+            <p>Member and delegate fees are combined into a single payment.</p>
+        </div>
+        <div class="member-section-card">
+            <ul class="pass-list">
+                @foreach (var item in Model.PendingRegistrations)
+                {
+                    <li>
+                        <strong>@item.FullName</strong> · @item.Id · @Model.CategoryName(item.Category) ·
+                        @(item.Currency == "USD" ? "$" : "\u20B9") @item.TotalAmount.ToString("N2")
+                    </li>
+                }
+            </ul>
+            <p><strong>Total: @(Model.PendingCurrency == "USD" ? "$" : "\u20B9") @Model.PendingTotal.ToString("N2")</strong></p>
+            <form method="post" asp-page-handler="PayAll">
+                <button class="btn btn-primary" type="submit">Pay all together</button>
+            </form>
+        </div>
+    }
+
+    @if (Model.Batches.Count > 0)
+    {
+        <div class="section-head">
+            <p class="eyebrow">Payment batches</p>
+            <h2>Payment history</h2>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Batch</th><th>Registrations</th><th>Amount</th><th>Status</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var batch in Model.Batches)
+                    {
+                        <tr>
+                            <td><strong>@batch.Id</strong></td>
+                            <td>@batch.Count</td>
+                            <td>@(batch.Currency == "USD" ? "$" : "\u20B9") @batch.Amount.ToString("N2")</td>
+                            <td><span class="status @batch.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@batch.PaymentStatus</span></td>
+                            <td class="row-actions">
+                                <a asp-page="Confirmation" asp-route-id="@batch.FirstRegistrationId">Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
     @if (!Model.Registrations.Any())
     {
         <p class="note">You have not submitted any registrations yet.</p>
     }
     else
     {
+        <div class="section-head">
+            <p class="eyebrow">Individual passes</p>
+            <h2>Registrations</h2>
+        </div>
         <table>
             <thead>
                 <tr><th>Membership ID</th><th>Registration</th><th>Delegate</th><th>Category</th><th>Amount</th><th>Status</th><th></th></tr>
@@ -45,9 +102,9 @@
                         <td>@(item.Currency == "USD" ? "$" : "\u20B9") @item.TotalAmount.ToString("N2")</td>
                         <td><span class="status @item.PaymentStatus.Replace(" ", "-").ToLowerInvariant()">@item.PaymentStatus</span></td>
                         <td class="row-actions">
-                            @if (item.PaymentStatus != Models.PaymentStates.Paid)
+                            @if (item.PaymentStatus == PaymentStates.Paid)
                             {
-                                <a asp-page="Payment" asp-route-id="@item.Id">Pay</a>
+                                <a asp-page="Pass" asp-route-id="@item.Id">Event QR</a>
                             }
                             <a asp-page="Confirmation" asp-route-id="@item.Id">Details</a>
                             <a asp-page="Receipt" asp-route-id="@item.Id">Receipt</a>

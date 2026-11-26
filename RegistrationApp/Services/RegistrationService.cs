@@ -5,7 +5,10 @@ using Microsoft.Extensions.Options;
 
 namespace Gcmac.Registration.Services;
 
-public sealed record PaymentCompletion(PaymentCallbackResult Result, string? RegistrationId);
+public sealed record PaymentCompletion(
+    PaymentCallbackResult Result,
+    string? RegistrationId,
+    string? BatchId);
 
 public sealed class RegistrationService(
     RegistrationStore store,
@@ -18,10 +21,16 @@ public sealed class RegistrationService(
 
     public int MaxDelegatesPerMember => notificationOptions.Value.MaxDelegatesPerMember;
 
-    public async Task<RegistrationRecord> CreateAsync(RegistrationInput input, string accountEmail)
+    public int MaxAdditionalDelegatesPerMember => notificationOptions.Value.MaxAdditionalDelegatesPerMember;
+
+    public async Task<RegistrationRecord> CreateAsync(
+        RegistrationInput input,
+        string accountEmail,
+        bool isAdditionalDelegate = false)
     {
         var record = RegistrationRecord.From(input, RegistrationStore.GenerateId(), accountEmail,
             fees.Calculate(input.Category));
+        record.IsAdditionalDelegate = isAdditionalDelegate;
         var created = await store.AddRegistrationAsync(record);
         await notifications.RegistrationSubmittedAsync(created);
         return created;
@@ -83,6 +92,86 @@ public sealed class RegistrationService(
     public async Task<int> CountDelegatesAsync(string memberNo) =>
         await store.CountBySponsorMemberNoAsync(memberNo);
 
+    public async Task<int> CountAdditionalDelegatesAsync(string memberNo) =>
+        await store.CountAdditionalBySponsorMemberNoAsync(memberNo);
+
+    public async Task<string> CreatePaymentBatchAsync(
+        IReadOnlyList<RegistrationRecord> records,
+        string accountEmail,
+        string sponsorMemberNo,
+        string kind)
+    {
+        var items = records.Where(r => !string.IsNullOrWhiteSpace(r.Id)).ToList();
+        if (items.Count == 0) throw new ArgumentException("No registrations to pay for.", nameof(records));
+
+        var batchId = RegistrationStore.GenerateBatchId();
+        foreach (var record in items)
+        {
+            record.PaymentBatchId = batchId;
+            record.AccountEmail = accountEmail;
+            if (string.IsNullOrWhiteSpace(record.SponsorMemberNo) &&
+                !string.Equals(record.MembershipNo, sponsorMemberNo, StringComparison.OrdinalIgnoreCase))
+                record.SponsorMemberNo = sponsorMemberNo;
+        }
+
+        await store.SaveRegistrationsAsync(items);
+        return batchId;
+    }
+
+    public async Task<(string BatchId, IReadOnlyList<RegistrationRecord> Items)> CreateCombinedPaymentBatchAsync(
+        string accountEmail,
+        string? memberNo = null,
+        string kind = PaymentBatchKinds.Registration)
+    {
+        var byEmail = await store.GetByEmailAsync(accountEmail);
+        var byMember = string.IsNullOrWhiteSpace(memberNo)
+            ? Array.Empty<RegistrationRecord>()
+            : await store.GetBySponsorMemberNoAsync(memberNo);
+
+        var items = byEmail.Concat(byMember)
+            .Where(r => r.PaymentStatus == PaymentStates.Pending)
+            .GroupBy(r => r.Id)
+            .Select(group => group.First())
+            .OrderBy(r => r.CreatedAt)
+            .ToList();
+
+        if (items.Count == 0) throw new ArgumentException("No pending registrations to pay for.");
+
+        var batchId = RegistrationStore.GenerateBatchId();
+        foreach (var record in items)
+        {
+            record.PaymentBatchId = batchId;
+            record.AccountEmail = accountEmail;
+            if (string.IsNullOrWhiteSpace(record.SponsorMemberNo) &&
+                !string.Equals(record.MembershipNo, memberNo, StringComparison.OrdinalIgnoreCase))
+                record.SponsorMemberNo = memberNo;
+        }
+
+        await store.SaveRegistrationsAsync(items);
+        return (batchId, items);
+    }
+
+    public async Task<IReadOnlyList<RegistrationRecord>> GetPaymentBatchAsync(string batchId) =>
+        await store.GetByPaymentBatchIdAsync(batchId);
+
+    public async Task<bool> CanAccessPaymentBatchAsync(
+        string batchId,
+        string? accountEmail,
+        string? memberNo,
+        bool isAdmin)
+    {
+        var records = await store.GetByPaymentBatchIdAsync(batchId);
+        if (records.Count == 0) return false;
+        if (isAdmin) return true;
+
+        return records.Any(record =>
+            (!string.IsNullOrWhiteSpace(accountEmail) &&
+             string.Equals(record.AccountEmail, accountEmail, StringComparison.OrdinalIgnoreCase)) ||
+            (!string.IsNullOrWhiteSpace(memberNo) &&
+             (string.Equals(record.SponsorMemberNo, memberNo, StringComparison.OrdinalIgnoreCase) ||
+              string.Equals(record.MembershipNo, memberNo, StringComparison.OrdinalIgnoreCase))));
+    }
+
     public async Task<PaymentResult?> SubmitOfflinePaymentAsync(RegistrationRecord record, string? reference)
     {
         if (record.PaymentStatus == PaymentStates.Paid) return null;
@@ -95,6 +184,26 @@ public sealed class RegistrationService(
         await store.SaveRegistrationAsync(record);
         await notifications.OfflineProofSubmittedAsync(record);
         return new PaymentResult(true, reference ?? "OFFLINE", record.PaymentMessage);
+    }
+
+    public async Task<PaymentResult?> SubmitOfflineBatchPaymentAsync(string batchId, string? reference)
+    {
+        var records = await store.GetByPaymentBatchIdAsync(batchId);
+        if (records.Count == 0 || records.All(r => r.PaymentStatus == PaymentStates.Paid)) return null;
+
+        foreach (var record in records)
+        {
+            record.PaymentStatus = PaymentStates.Verification;
+            record.PaymentMethod = "Offline";
+            record.PaymentReference = reference;
+            record.PaymentMessage = "Payment proof submitted. The secretariat will verify it.";
+        }
+
+        await store.SaveRegistrationsAsync(records);
+        foreach (var record in records)
+            await notifications.OfflineProofSubmittedAsync(record);
+
+        return new PaymentResult(true, reference ?? "OFFLINE", "Payment proof submitted for the whole batch.");
     }
 
     public async Task<PaymentInitiationResult> InitiatePaymentAsync(
@@ -133,26 +242,80 @@ public sealed class RegistrationService(
         return result;
     }
 
+    public async Task<PaymentInitiationResult> InitiateBatchPaymentAsync(
+        string batchId,
+        string method,
+        string returnUrl)
+    {
+        var records = await store.GetByPaymentBatchIdAsync(batchId);
+        if (records.Count == 0)
+            return new PaymentInitiationResult(false, null, "Payment batch not found.");
+        if (records.Any(r => r.PaymentStatus == PaymentStates.Paid))
+            return new PaymentInitiationResult(false, null, "This payment batch is already paid.");
+
+        var currency = records[0].Currency;
+        if (records.Any(r => !string.Equals(r.Currency, currency, StringComparison.OrdinalIgnoreCase)))
+            return new PaymentInitiationResult(false, null,
+                "This batch has registrations in different currencies. Pay them separately.");
+
+        var primary = records[0];
+        var amount = records.Sum(r => r.TotalAmount);
+        var merchantRef = RegistrationStore.GenerateMerchantRef();
+        var result = await gateway.InitiateAsync(new PaymentInitiationRequest(
+            batchId,
+            merchantRef,
+            amount,
+            currency,
+            method,
+            primary.Email,
+            primary.Mobile,
+            primary.FullName,
+            returnUrl));
+
+        if (!result.Success) return result;
+
+        await store.AddPaymentTransactionAsync(new PaymentTransaction
+        {
+            MerchantTxnRefNo = merchantRef,
+            RegistrationId = batchId,
+            BatchId = batchId,
+            RegistrationIdsCsv = string.Join(",", records.Select(r => r.Id)),
+            Kind = primary.IsAdditionalDelegate
+                ? PaymentBatchKinds.AdditionalDelegate
+                : PaymentBatchKinds.Registration,
+            Amount = amount,
+            Currency = currency,
+            Method = method,
+            Status = PaymentTransactionStatus.Pending,
+            CreatedAt = DateTimeOffset.UtcNow
+        });
+
+        return result;
+    }
+
     public async Task<PaymentCompletion> CompletePaymentAsync(PaymentCallback callback)
     {
         var result = await gateway.VerifyCallbackAsync(callback);
         if (string.IsNullOrWhiteSpace(result.MerchantTxnRefNo))
-            return new PaymentCompletion(result, null);
+            return new PaymentCompletion(result, null, null);
 
         var transaction = await store.FindPaymentTransactionAsync(result.MerchantTxnRefNo);
         if (transaction is null)
             return new PaymentCompletion(new PaymentCallbackResult(false, result.GatewayTransactionId,
                 result.StatusCode, result.MerchantTxnRefNo, result.Amount,
-                "Unknown payment reference."), null);
+                "Unknown payment reference."), null, null);
 
         if (transaction.Status == PaymentTransactionStatus.Success)
-            return new PaymentCompletion(result, transaction.RegistrationId);
+            return new PaymentCompletion(result, transaction.RegistrationId, transaction.BatchId);
 
-        var record = await store.FindAsync(transaction.RegistrationId);
-        if (record is null)
+        var isBatch = !string.IsNullOrWhiteSpace(transaction.BatchId);
+        var records = isBatch
+            ? await store.GetByPaymentBatchIdAsync(transaction.BatchId!)
+            : (await store.FindAsync(transaction.RegistrationId) is { } single ? [single] : []);
+        if (records.Count == 0)
             return new PaymentCompletion(new PaymentCallbackResult(false, result.GatewayTransactionId,
                 result.StatusCode, result.MerchantTxnRefNo, result.Amount,
-                "Registration for this payment no longer exists."), null);
+                "Registration for this payment no longer exists."), null, transaction.BatchId);
 
         if (result.Amount.HasValue && Math.Abs(result.Amount.Value - transaction.Amount) > 0.01m)
         {
@@ -166,24 +329,30 @@ public sealed class RegistrationService(
 
         if (result.Success)
         {
-            record.PaymentStatus = PaymentStates.Paid;
-            record.PaymentMethod = transaction.Method;
-            record.TransactionId = result.GatewayTransactionId ?? transaction.MerchantTxnRefNo;
-            record.PaymentMessage = "Online payment received.";
-            record.PaidAt ??= DateTimeOffset.UtcNow;
+            foreach (var record in records)
+            {
+                record.PaymentStatus = PaymentStates.Paid;
+                record.PaymentMethod = transaction.Method;
+                record.TransactionId = result.GatewayTransactionId ?? transaction.MerchantTxnRefNo;
+                record.PaymentMessage = "Online payment received.";
+                record.PaidAt ??= DateTimeOffset.UtcNow;
+            }
+
+            await store.SaveRegistrationsAsync(records);
             transaction.Status = PaymentTransactionStatus.Success;
 
-            await store.SaveRegistrationAsync(record);
-            await notifications.PaymentSucceededAsync(record, transaction);
+            foreach (var record in records)
+                await notifications.PaymentSucceededAsync(record, transaction);
         }
         else
         {
             transaction.Status = PaymentTransactionStatus.Failed;
-            await notifications.PaymentFailedAsync(record);
+            foreach (var record in records)
+                await notifications.PaymentFailedAsync(record);
         }
 
         await store.SavePaymentTransactionAsync(transaction);
-        return new PaymentCompletion(result, record.Id);
+        return new PaymentCompletion(result, records[0].Id, transaction.BatchId);
     }
 
     public async Task MarkPaidAsync(RegistrationRecord record)
@@ -193,5 +362,15 @@ public sealed class RegistrationService(
         record.PaymentMessage = "Verified by the secretariat.";
         await store.SaveRegistrationAsync(record);
         await notifications.PaymentVerifiedAsync(record);
+    }
+
+    public async Task MarkBatchPaidAsync(string batchId)
+    {
+        var records = await store.GetByPaymentBatchIdAsync(batchId);
+        foreach (var record in records)
+        {
+            if (record.PaymentStatus == PaymentStates.Paid) continue;
+            await MarkPaidAsync(record);
+        }
     }
 }

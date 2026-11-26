@@ -61,7 +61,7 @@ public sealed class AddDelegateModel(RegistrationService service) : BasePageMode
         if (!ValidateInput()) return Page();
 
         await service.CreateAsync(Input, CurrentEmail ?? MemberNo);
-        Notice = "Delegate added. You can continue adding delegates or pay now.";
+        Notice = "Delegate added. Pay all registrations together from My registrations.";
         Input = NewInput();
         await ReloadAsync();
         return Page();
@@ -79,8 +79,9 @@ public sealed class AddDelegateModel(RegistrationService service) : BasePageMode
         }
         if (!ValidateInput()) return Page();
 
-        var record = await service.CreateAsync(Input, CurrentEmail ?? MemberNo);
-        return RedirectToPage("Payment", new { id = record.Id });
+        await service.CreateAsync(Input, CurrentEmail ?? MemberNo);
+        var result = await service.CreateCombinedPaymentBatchAsync(CurrentEmail ?? MemberNo, MemberNo);
+        return RedirectToPage("BatchPayment", new { id = result.BatchId });
     }
 
     public async Task<IActionResult> OnPostUpdateAsync()

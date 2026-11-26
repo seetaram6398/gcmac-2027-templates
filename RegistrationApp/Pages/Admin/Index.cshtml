@@ -24,7 +24,12 @@
             @foreach (var item in Model.Registrations)
             {
                 <tr>
-                    <td><strong>@item.Id</strong><br /><small>@item.CreatedAt.ToString("dd MMM yyyy")</small></td>
+                    <td><strong>@item.Id</strong><br /><small>@item.CreatedAt.ToString("dd MMM yyyy")</small>
+                        @if (!string.IsNullOrWhiteSpace(item.PaymentBatchId))
+                        {
+                            <br /><small>Batch @item.PaymentBatchId</small>
+                        }
+                    </td>
                     <td>@item.FullName<br /><small>@item.Email</small></td>
                     <td>@Model.CategoryName(item.Category)</td>
                     <td>@(item.Currency == "USD" ? "$" : "\u20B9") @item.TotalAmount.ToString("N2")</td>
@@ -46,6 +51,12 @@
                             <form method="post" asp-page-handler="MarkPaid" asp-route-id="@item.Id" class="inline-form">
                                 <button class="link-button" type="submit">Mark paid</button>
                             </form>
+                            @if (!string.IsNullOrWhiteSpace(item.PaymentBatchId))
+                            {
+                                <form method="post" asp-page-handler="VerifyBatch" asp-route-batchId="@item.PaymentBatchId" class="inline-form">
+                                    <button class="link-button" type="submit">Verify batch</button>
+                                </form>
+                            }
                         }
                     </td>
                 </tr>

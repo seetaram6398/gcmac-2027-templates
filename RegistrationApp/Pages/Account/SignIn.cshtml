@@ -29,7 +29,7 @@
 
         <div class="auth-card">
             <div class="auth-card-head">
-                <p class="auth-kicker">Sign in</p>
+                <p class="auth-kicker">Sign in / sign up</p>
                 <h2>Choose your category</h2>
                 <p>Use the credentials for your GCMAC 2027 account.</p>
             </div>
@@ -72,7 +72,7 @@
                         <div asp-validation-summary="All" class="validation"></div>
                         <label class="auth-field">
                             <span>ICMAI membership number</span>
-                            <input name="MembershipNo" inputmode="numeric" pattern="[0-9]+" autocomplete="username" placeholder="Membership number" required />
+                            <input name="MembershipNo" value="@Model.MembershipNo" inputmode="numeric" pattern="[0-9]+" autocomplete="username" placeholder="Membership number" required />
                         </label>
                         @if (Model.ShowOtpWindow)
                         {
@@ -93,7 +93,7 @@
                             <button class="btn btn-secondary auth-resend" type="submit" name="SendOtp" value="true">Resend OTP</button>
                         }
                         <div class="auth-links">
-                            <a asp-page="/Account/MemberSignup">New member? Sign up</a>
+                            <a asp-page="/Account/SignIn" asp-route-type="member" asp-route-returnUrl="/Member/Registration">New member? Sign in / sign up here</a>
                         </div>
                         <p class="auth-hint">Demo OTP: <strong>@Model.DemoSecretValue</strong></p>
                     </form>

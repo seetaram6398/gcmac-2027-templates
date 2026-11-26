@@ -30,7 +30,7 @@
                 index++;
                 var href = option.Category switch
                 {
-                    DelegateCategory.CmaPractice => Url.Page("/Account/MemberSignup"),
+                    DelegateCategory.CmaPractice => Url.Page("/Account/SignIn", new { type = "member", returnUrl = "/Member/Registration" }),
                     DelegateCategory.CorporateOthers => Url.Page("/Account/CorporateLogin", new { returnUrl = $"/Register/Form?category=CorporateOthers&sponsor={Model.Sponsor}" }),
                     DelegateCategory.Student => Url.Page("/Account/StudentLogin", new { returnUrl = $"/Register/Form?category=Student&sponsor={Model.Sponsor}" }),
                     DelegateCategory.Foreign => Url.Page("/Account/ForeignLogin", new { returnUrl = $"/Register/Form?category=Foreign&sponsor={Model.Sponsor}" }),

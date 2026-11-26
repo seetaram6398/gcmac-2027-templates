@@ -20,6 +20,7 @@ public sealed class NotificationMessage
     public string Recipient { get; set; } = "";
     public string TemplateKey { get; set; } = "";
     public string Body { get; set; } = "";
+    public string HtmlBody { get; set; } = "";
     public string? TemplateId { get; set; }
     public string Status { get; set; } = NotificationStatus.Pending;
     public int Attempts { get; set; }

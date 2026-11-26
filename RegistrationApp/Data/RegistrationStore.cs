@@ -162,8 +162,17 @@ public sealed class RegistrationStore
         await db.SaveChangesAsync(cancellationToken);
     }
 
+    private static void EnsureMembershipId(RegistrationRecord record)
+    {
+        if (string.IsNullOrWhiteSpace(record.MembershipId))
+            record.MembershipId = MembershipIds.Build(
+                record.SponsorMemberNo ?? record.MembershipNo, record.FullName);
+    }
+
     public async Task<RegistrationRecord> AddRegistrationAsync(RegistrationRecord record, CancellationToken cancellationToken = default)
     {
+        EnsureMembershipId(record);
+
         if (_factory is null)
             return await FileWriteAsync(state =>
             {
@@ -215,6 +224,33 @@ public sealed class RegistrationStore
         await db.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task SaveRegistrationsAsync(
+        IEnumerable<RegistrationRecord> records,
+        CancellationToken cancellationToken = default)
+    {
+        var items = records.ToList();
+        if (items.Count == 0) return;
+
+        if (_factory is null)
+        {
+            await FileWriteAsync(state =>
+            {
+                foreach (var record in items)
+                {
+                    var index = state.Registrations.FindIndex(r => r.Id == record.Id);
+                    if (index >= 0) state.Registrations[index] = record;
+                    else state.Registrations.Add(record);
+                }
+                return true;
+            });
+            return;
+        }
+
+        await using var db = await _factory.CreateDbContextAsync(cancellationToken);
+        db.Registrations.UpdateRange(items);
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<RegistrationRecord?> FindAsync(string id, CancellationToken cancellationToken = default)
     {
         if (_factory is null)
@@ -260,6 +296,35 @@ public sealed class RegistrationStore
         return await db.Registrations.AsNoTracking()
             .Where(r => r.SponsorMemberNo == memberNo)
             .OrderByDescending(r => r.CreatedAt).ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<RegistrationRecord>> GetByPaymentBatchIdAsync(
+        string batchId,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(batchId)) return [];
+        if (_factory is null)
+            return await FileReadAsync(state => (IReadOnlyList<RegistrationRecord>)state.Registrations
+                .Where(r => string.Equals(r.PaymentBatchId, batchId, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(r => r.CreatedAt).ToList());
+
+        await using var db = await _factory.CreateDbContextAsync(cancellationToken);
+        return await db.Registrations.AsNoTracking()
+            .Where(r => r.PaymentBatchId == batchId)
+            .OrderBy(r => r.CreatedAt).ToListAsync(cancellationToken);
+    }
+
+    public async Task<int> CountAdditionalBySponsorMemberNoAsync(
+        string memberNo,
+        CancellationToken cancellationToken = default)
+    {
+        if (_factory is null)
+            return await FileReadAsync(state => state.Registrations.Count(r => r.IsAdditionalDelegate &&
+                string.Equals(r.SponsorMemberNo, memberNo, StringComparison.OrdinalIgnoreCase)));
+
+        await using var db = await _factory.CreateDbContextAsync(cancellationToken);
+        return await db.Registrations.CountAsync(
+            r => r.IsAdditionalDelegate && r.SponsorMemberNo == memberNo, cancellationToken);
     }
 
     public async Task<int> CountBySponsorMemberNoAsync(string memberNo, CancellationToken cancellationToken = default)
@@ -381,4 +446,7 @@ public sealed class RegistrationStore
 
     public static string GenerateMerchantRef() =>
         $"GCMAC27{DateTime.UtcNow:ddMMyyyyHHmmss}{Guid.NewGuid().ToString("N")[..6].ToUpperInvariant()}";
+
+    public static string GenerateBatchId() =>
+        $"BATCH-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..6].ToUpperInvariant()}";
 }

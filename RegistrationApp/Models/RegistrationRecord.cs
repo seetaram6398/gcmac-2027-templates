@@ -34,6 +34,8 @@ public sealed class RegistrationRecord
     public string? Gstin { get; set; }
     public string? SponsorMemberNo { get; set; }
     public string? AddedByAccountEmail { get; set; }
+    public string PaymentBatchId { get; set; } = "";
+    public bool IsAdditionalDelegate { get; set; }
     public string Currency { get; set; } = "INR";
     public decimal BaseFee { get; set; }
     public decimal GstRate { get; set; }

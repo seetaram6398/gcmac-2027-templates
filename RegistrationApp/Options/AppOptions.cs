@@ -14,8 +14,9 @@ public sealed class PaymentOptions
 {
     public const string SectionName = "Payment";
 
-    public string Provider { get; set; } = "Demo";
+    public string Provider { get; set; } = "PNB";
     public string Currency { get; set; } = "INR";
+    public string PublicBaseUrl { get; set; } = "";
     public PnbPaymentOptions Pnb { get; set; } = new();
 }
 
@@ -38,6 +39,8 @@ public sealed class NotificationOptions
     public string AdminEmail { get; set; } = "";
     public string AdminMobile { get; set; } = "";
     public int MaxDelegatesPerMember { get; set; } = 5;
+    public int MaxAdditionalDelegatesPerMember { get; set; } = 5;
+    public string PublicBaseUrl { get; set; } = "";
 }
 
 public sealed class EmailOptions

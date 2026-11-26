@@ -31,6 +31,15 @@ public sealed class AdminModel(Services.RegistrationService service, FeeCatalog 
         return RedirectToPage();
     }
 
+    public async Task<IActionResult> OnPostVerifyBatchAsync(string batchId)
+    {
+        var denied = Denied();
+        if (denied is not null) return denied;
+
+        await service.MarkBatchPaidAsync(batchId);
+        return RedirectToPage();
+    }
+
     private async Task LoadAsync()
     {
         var all = await service.GetAllAsync();

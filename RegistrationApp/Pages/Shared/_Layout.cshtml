@@ -68,7 +68,7 @@
                 <a href="~/programme.html#pillars">Program Schedule</a>
                 <a href="~/important-dates.html">Important Dates</a>
                 <a href="~/sponsorship.html">Sponsorship</a>
-                <a asp-page="/Register/Category">Registration</a>
+                <a asp-page="/Account/SignIn" asp-route-type="member" asp-route-returnUrl="/Member/Registration">Registration</a>
                 <a href="~/contact.html">Contact Us</a>
                 <div class="nav-mobile-account">
                     @if (loggedIn)
@@ -140,13 +140,13 @@
             <div>
                 <p class="footer-label">Convention</p>
                 <a asp-page="/Index">Home</a>
-                <a asp-page="/Register/Category">Registration</a>
+                <a asp-page="/Account/SignIn" asp-route-type="member" asp-route-returnUrl="/Member/Registration">Registration</a>
                 <a asp-page="/Register/Track">Track a registration</a>
             </div>
             <div>
                 <p class="footer-label">Participate</p>
                 <a asp-page="/Register/Category">Delegate categories</a>
-                <a asp-page="/Account/MemberSignup">Member signup</a>
+                <a asp-page="/Account/SignIn" asp-route-type="member" asp-route-returnUrl="/Member/Registration">Member signup</a>
                 <a asp-page="/Member/Dashboard">Member dashboard</a>
                 <a asp-page="/Register/MyRegistrations">My Registrations</a>
                 <a asp-page="/Account/SignIn">Sign in — all categories</a>

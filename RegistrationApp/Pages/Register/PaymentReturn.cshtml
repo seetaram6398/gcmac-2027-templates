@@ -10,18 +10,42 @@
     <h1>@(Model.Success ? "Payment received" : "Payment not completed")</h1>
     <p class="lead">@Model.Message</p>
 
-    @if (Model.Success && !string.IsNullOrWhiteSpace(Model.RegistrationId))
+    @if (Model.Success && Model.BatchRegistrations.Count > 0)
     {
-        <p>Registration <strong>@Model.RegistrationId</strong> is confirmed.</p>
+        <p>All registrations in this payment are confirmed. Separate event QR codes have been emailed to the member and each delegate.</p>
+        <ul class="pass-list">
+            @foreach (var item in Model.BatchRegistrations)
+            {
+                <li>
+                    <strong>@item.FullName</strong> · @item.Id · @item.MembershipId
+                    <a asp-page="Pass" asp-route-id="@item.Id">View QR</a>
+                </li>
+            }
+        </ul>
         <div class="actions">
-            <a class="btn btn-primary" asp-page="Confirmation" asp-route-id="@Model.RegistrationId">View confirmation</a>
+            <a class="btn btn-primary" asp-page="Confirmation" asp-route-id="@Model.BatchRegistrations[0].Id">View confirmation</a>
+            <a class="btn btn-secondary" asp-page="MyRegistrations">My registrations</a>
+        </div>
+    }
+    else if (Model.Success && !string.IsNullOrWhiteSpace(Model.RegistrationId))
+    {
+        <p>Registration <strong>@Model.RegistrationId</strong> is confirmed. Your event QR has been emailed.</p>
+        <div class="actions">
+            <a class="btn btn-primary" asp-page="Pass" asp-route-id="@Model.RegistrationId">View event QR</a>
             <a class="btn btn-secondary" asp-page="Receipt" asp-route-id="@Model.RegistrationId">Receipt</a>
         </div>
     }
     else if (!string.IsNullOrWhiteSpace(Model.RegistrationId))
     {
         <div class="actions">
-            <a class="btn btn-primary" asp-page="Payment" asp-route-id="@Model.RegistrationId">Try again</a>
+            @if (!string.IsNullOrWhiteSpace(Model.BatchId))
+            {
+                <a class="btn btn-primary" asp-page="BatchPayment" asp-route-id="@Model.BatchId">Try again</a>
+            }
+            else
+            {
+                <a class="btn btn-primary" asp-page="Payment" asp-route-id="@Model.RegistrationId">Try again</a>
+            }
             <a class="btn btn-secondary" asp-page="MyRegistrations">My registrations</a>
         </div>
     }

@@ -129,6 +129,11 @@ namespace Gcmac.Registration.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("HtmlBody")
+                        .IsRequired()
+                        .HasMaxLength(8000)
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LastError")
                         .HasColumnType("nvarchar(max)");
 
@@ -173,6 +178,10 @@ namespace Gcmac.Registration.Data.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("BatchId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.Property<DateTimeOffset?>("CompletedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -189,6 +198,11 @@ namespace Gcmac.Registration.Data.Migrations
                     b.Property<string>("GatewayTransactionId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
                     b.Property<string>("Method")
                         .IsRequired()
                         .HasMaxLength(32)
@@ -198,12 +212,19 @@ namespace Gcmac.Registration.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("RegistrationIdsCsv")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
                     b.HasKey("MerchantTxnRefNo");
+
+                    b.HasIndex("BatchId");
 
                     b.HasIndex("RegistrationId");
 
@@ -280,6 +301,9 @@ namespace Gcmac.Registration.Data.Migrations
                     b.Property<string>("Gstin")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsAdditionalDelegate")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsEarlyBird")
                         .HasColumnType("bit");
 
@@ -306,6 +330,11 @@ namespace Gcmac.Registration.Data.Migrations
 
                     b.Property<DateTimeOffset?>("PaidAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("PaymentBatchId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("PaymentMessage")
                         .HasColumnType("nvarchar(max)");
@@ -348,6 +377,8 @@ namespace Gcmac.Registration.Data.Migrations
                     b.HasIndex("AccountEmail");
 
                     b.HasIndex("MembershipId");
+
+                    b.HasIndex("PaymentBatchId");
 
                     b.HasIndex("PaymentStatus");
 

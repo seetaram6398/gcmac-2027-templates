@@ -41,7 +41,7 @@ public sealed class PaymentModel(RegistrationService registrations) : BasePageMo
             var record = await registrations.FindAsync(id);
             if (record is null || !OwnedBy(record, memberNo)) continue;
 
-            var text = BuildQrText(record);
+            var text = DelegatePasses.QrText(record);
             items.Add(new MemberQrRegistration(record, QrCodes.DataUri(text), text));
         }
 
@@ -55,11 +55,4 @@ public sealed class PaymentModel(RegistrationService registrations) : BasePageMo
         (record.Category == DelegateCategory.CmaPractice &&
          string.Equals(record.MembershipNo, memberNo, StringComparison.OrdinalIgnoreCase));
 
-    private static string BuildQrText(RegistrationRecord record) => string.Join(Environment.NewLine,
-        "GCMAC 2027",
-        $"Registration date: {record.CreatedAt.ToLocalTime():dd-MM-yyyy}",
-        $"Member name: {record.FullName}",
-        $"Registration no.: {record.Id}",
-        $"Membership no.: {record.MembershipId}",
-        $"Amount: {record.TotalAmount:0.00} {record.Currency}");
 }
